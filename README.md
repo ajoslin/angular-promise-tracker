@@ -15,7 +15,7 @@ Well, [sigh no more](http://www.youtube.com/watch?v=eltHv58l8ig) my dear friend,
 
 We now have an easy solution for ya! Here's how it looks.
 
-1. Throw a promiseTracker onto your scope.
+- Throw a promiseTracker onto your scope.
 
 ```js
 function MyCtrl($scope, promiseTracker) {
@@ -23,7 +23,7 @@ function MyCtrl($scope, promiseTracker) {
 }
 ```
 
-2. Do some requests, and in their config add in a little option called `tracker`.
+- Do some requests, and in their config add in a little option called `tracker`.
 
 ```js
 $http.get('/pizzaFlavor', { tracker: 'pizza' });
@@ -31,7 +31,8 @@ $http.get('/pizzaType', { tracker: 'pizza' });
 $http.get('/pizzaCrust', { tracker: 'pizza' });
 ```
 
-3. Now the awesomes happen: `pizzaTracker.active()` will be true whenever any request with `tracker: 'pizza'` is waiting for response!
+- Now the awesomes happen: `pizzaTracker.active()` will be true whenever any request with `tracker: 'pizza'` is waiting for response!
+ 
 
 ```html
 <div ng-show="pizzaTracker.active()" style="background: pink;">
@@ -39,7 +40,7 @@ $http.get('/pizzaCrust', { tracker: 'pizza' });
 </div>
 ```
 
-4. But wait, there's more! You can also catch events for any of these requests...
+- But wait, there's more! You can also catch events for any of these requests...
 
 ```js
 $scope.pizzaTracker.on('error', function(response) {
@@ -50,7 +51,7 @@ $http.get('/pizzaError', { tracker: 'pizza' });
 
 You can catch any of these events: `'error'`, `'success'`, `'start'`, `'done'`.  Hopefully they make sense to ya!
 
-5. Oh, and did I mention... **you can attach any old promise to your tracker.  Not just http requests!**
+- Oh, and did I mention... **you can attach any old promise to your tracker.  Not just http requests!**
 
 ```js
 var myPizzaPromise = $q.defer();
