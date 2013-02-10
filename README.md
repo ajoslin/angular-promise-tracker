@@ -49,7 +49,7 @@ $scope.pizzaTracker.on('error', function(response) {
 $http.get('/pizzaError', { tracker: 'pizza' });
 ```
 ```html
-<b ng-show="pizzaError" style="color:red;">Some sorta pizza error happened. Sorry!</b>
+<b ng-show="pizzaError" style="color:red;">!! {{pizzaError}} !!</b>
 ```
 
 You can catch any of these events: `'error'`, `'success'`, `'start'`, `'done'`.  Hopefully they all make sense.
