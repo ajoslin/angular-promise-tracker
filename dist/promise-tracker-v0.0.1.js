@@ -5,7 +5,7 @@
  */
 
 angular.module('promiseTracker', [])
-.factory('promiseTracker', function($q) {
+.factory('promiseTracker', ['$q', function($q) {
   var self = this;
   var trackers = {};
 
@@ -79,11 +79,11 @@ angular.module('promiseTracker', [])
     if (!trackers[trackerName]) trackers[trackerName] = new Tracker(trackerName);
     return trackers[trackerName];
   };
-})
-.config(function($httpProvider) {
+}])
+.config(['$httpProvider', function($httpProvider) {
   $httpProvider.responseInterceptors.push('trackerResponseInterceptor');
-})
-.factory('trackerResponseInterceptor', function($q, promiseTracker, $injector) {
+}])
+.factory('trackerResponseInterceptor', ['$q', 'promiseTracker', '$injector', function($q, promiseTracker, $injector) {
   //We use $injector get around circular dependency problem for $http
   var $http;
   return function spinnerResponseInterceptor(promise) {
@@ -102,4 +102,4 @@ angular.module('promiseTracker', [])
     }
     return promise;
   };
-});
+}]);
