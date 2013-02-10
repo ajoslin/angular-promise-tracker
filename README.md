@@ -15,6 +15,8 @@ Well, [sigh no more](http://www.youtube.com/watch?v=eltHv58l8ig) my dear friend,
 
 We now have an easy solution for ya! Here's how it looks.
 
+-
+
 #### Throw a promiseTracker onto your scope
 
 ```js
