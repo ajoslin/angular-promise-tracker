@@ -55,7 +55,7 @@ $http.get('/pizzaError', { tracker: 'pizza' });
 You can catch any of these events: `'error'`, `'success'`, `'start'`, `'done'`.  Hopefully they all make sense.
 
 
-- **Oh, and did I mention... **you can attach any old promise to your pizza tracker.  Not just http requests!**
+- **Oh, and did I mention... you can attach any old promise to your pizza tracker.  Not just http requests!**
 
 ```js
 var myPizzaPromise = $q.defer();
