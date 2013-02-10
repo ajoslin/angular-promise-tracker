@@ -48,7 +48,7 @@ $http.get('/pizzaCrust', { tracker: 'pizza' });
 
 -
 
-* But wait, there's more! You can also catch cool events when stuff happens on any pizza promise...**
+* But wait, there's more! You can also catch cool events when stuff happens on any pizza promise...
 
 
 ```js
