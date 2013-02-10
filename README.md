@@ -62,6 +62,11 @@ var myPizzaPromise = $q.defer();
 $scope.pizzaTracker.addPromise(myPizzaPromise.promise);
 ```
 
-** Documentation/API **
+## Documentation/API 
 
 * Eh, what?  You want full documentation?  Well you'll just have to wait, ya young whippersnapper! There'll be an API up here soon, and maybe some docco docs of the source for ya!
+
+## Development
+
+* Install jshint and uglifyjs with `npm install -g uglifyjs jshint`
+* Run `make` to build, `make test` to single run tests, and `make server` to start the test server
