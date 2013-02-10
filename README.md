@@ -23,7 +23,7 @@ function MyCtrl($scope, promiseTracker) {
 }
 ```
 
-2. Do some requests, and give 'em a tracker option in their config!
+2. Do some requests, and in their config add in a little option called `tracker`.
 
 ```js
 $http.get('/pizzaFlavor', { tracker: 'pizza' });
