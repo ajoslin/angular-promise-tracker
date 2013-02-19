@@ -1,7 +1,7 @@
 angular-promise-tracker
 =======================
 
-[Demo](http://plnkr.co/edit/a4szsJIqj0d9dVi92TJe?p=preview)
+[Demo](http://plnkr.co/edit/SHtk7eSrbs1dfoQawPCW?p=preview)
 
 So you're building your angular app.  And you want a loading spinner.
 
