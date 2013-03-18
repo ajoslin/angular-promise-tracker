@@ -15,12 +15,6 @@ angular.module('promiseTracker', [])
     self.active = function() {
       return numPending > 0;
     };
-    /*
-     * on: add a callback for an event
-     * @param event: 'start', 'done', 'error', or 'success'
-     * @param callback: function() {} to call when event happens
-     * @return function removeCallback: removes listener
-     */
     self.on = self.bind = function(event, cb) {
       if (!callbacks[event]) {
         throw "Cannot create callback for event '" + event + 
@@ -41,6 +35,7 @@ angular.module('promiseTracker', [])
         //Erase all events of this type if no cb specified to remvoe
         callbacks[event].length = 0;
       }
+      return self;
     };
 
     function promiseDone(value, isError) {
@@ -55,7 +50,7 @@ angular.module('promiseTracker', [])
       });
     }
     /* Adds any old promise to our tracking */
-    /* startParam is usually an htttp request config object */
+    /* startParam is usually an http request config object */
     self.addPromise = function(promise, startParam) {
       numPending++;
       fireEvent('start', [startParam]);

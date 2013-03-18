@@ -1,5 +1,5 @@
 VERSION=0.0.1
-FILENAME=promise-tracker-v${VERSION}
+FILENAME=promise-tracker
 
 default:
 	jshint src/*.js
