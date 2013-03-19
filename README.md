@@ -18,7 +18,7 @@ Well, [sigh no more](http://www.youtube.com/watch?v=eltHv58l8ig) my dear friend,
 
   ```js
   function MyCtrl($scope, promiseTracker) {
-    $scope.pizzaTracker = promiseTracker('pizza');
+      $scope.pizzaTracker = promiseTracker('pizza');
   }
   ```
 
@@ -35,7 +35,7 @@ Well, [sigh no more](http://www.youtube.com/watch?v=eltHv58l8ig) my dear friend,
 
   ```html
   <div ng-show="pizzaTracker.active()" style="background: pink;">
-    Loading some pizza data for ya, sir! ...
+      Loading some pizza data for ya, sir! ...
   </div>
   ```
 
@@ -43,7 +43,7 @@ Well, [sigh no more](http://www.youtube.com/watch?v=eltHv58l8ig) my dear friend,
 
   ```js
   $scope.pizzaTracker.on('error', function(response) {
-    $scope.pizzaError = "Uh oh, some sort of pizza error happened! " + response.data;
+      $scope.pizzaError = "Uh oh, some sort of pizza error happened! " + response.data;
   });
   $http.get('/pizzaError', { tracker: 'pizza' });
   ```
