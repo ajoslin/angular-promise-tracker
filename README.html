@@ -1,0 +1,91 @@
+<h1>angular-promise-tracker</h1>
+
+<p><a href="http://plnkr.co/edit/SHtk7eSrbs1dfoQawPCW?p=preview">Demo</a></p>
+
+<p>So you're building your angular app.  And you want a loading spinner.</p>
+
+<p>You've tried the <a href="http://jsfiddle.net/zdam/dBR2r/">normal solution</a> (or maybe you haven't), and it has problems.  It presents a loading spinner on <em>every request</em>!</p>
+
+<p>But you don't want the same global loading spinner whenever any request happens anywhere. That just won't work!</p>
+
+<p>Instead, you want different indicators while different types of request are loading.  You want one spinner while you're fetching data having to do with a user's pizza order, one while fetching user's profile data, and maybe another for some random service you have that returns a promise. All these on different parts of the UI.  Heck, maybe you don't even want a spinner.  You just want to know while http requests of some type are pending.</p>
+
+<p>Well, <a href="http://www.youtube.com/watch?v=eltHv58l8ig">sigh no more</a> my dear friend, your troubles are over.</p>
+
+<ul>
+<li>Throw a promiseTracker onto your scope
+<blockquote>
+  <p><code>js
+&gt; function MyCtrl($scope, promiseTracker) {
+&gt; $scope.pizzaTracker = promiseTracker('pizza');
+&gt; }
+&gt;</code></li></p>
+
+<h2></ul></h2>
+</blockquote>
+
+<ul>
+<li>Do some requests, and in their config add in a little option called <code>tracker</code></li>
+</ul>
+
+<p><code>js
+$http.get('/pizzaFlavor', { tracker: 'pizza' });
+$http.get('/pizzaType', { tracker: 'pizza' });
+$http.get('/pizzaCrust', { tracker: 'pizza' });
+</code></p>
+
+<p>-</p>
+
+<ul>
+<li>Now the awesomes happen: <code>pizzaTracker.active()</code> will be true whenever any request with <code>tracker: 'pizza'</code> is waiting for response!</li>
+</ul>
+
+<p>```html</p>
+
+<div ng-show="pizzaTracker.active()" style="background: pink;">
+  Loading some pizza data for ya, sir! ...
+</div>
+
+<p>```</p>
+
+<p>-</p>
+
+<ul>
+<li>But wait, there's more! You can also catch cool events when stuff happens on any pizza promise...</li>
+</ul>
+
+<p><code>js
+$scope.pizzaTracker.on('error', function(response) {
+  $scope.pizzaError = "Uh oh, some sort of pizza error happened! " + response.data;
+});
+$http.get('/pizzaError', { tracker: 'pizza' });
+</code>
+<code>html
+&lt;b ng-show="pizzaError" style="color:red;"&gt;!! {{pizzaError}} !!&lt;/b&gt;
+</code></p>
+
+<p>You can catch any of these events: <code>'error'</code>, <code>'success'</code>, <code>'start'</code>, <code>'done'</code>.  Hopefully they all make sense.</p>
+
+<p>-</p>
+
+<ul>
+<li>Oh, and did I mention... you can attach any old promise to your pizza tracker.  Not just http requests!</li>
+</ul>
+
+<p><code>js
+var myPizzaPromise = $q.defer();
+$scope.pizzaTracker.addPromise(myPizzaPromise.promise);
+</code></p>
+
+<h2>Development</h2>
+
+<ul>
+<li>Install jshint and uglifyjs with <code>npm install -g uglifyjs jshint</code></li>
+<li>Run <code>make</code> to build, <code>make test</code> to single run tests, and <code>make server</code> to start the test server</li>
+</ul>
+
+<h2>License</h2>
+
+<blockquote>
+  <p><a rel="license" href="http://creativecommons.org/publicdomain/mark/1.0/"> <img src="http://i.creativecommons.org/p/mark/1.0/80x15.png" style="border-style: none;" alt="Public Domain Mark" /> </a> <span property="dct:title">angular-promise-tracker</span> by <a href="http://andybam.com" rel="dct:creator"><span property="dct:title">Andy Joslin</span></a> is free of known copyright restrictions.</p>
+</blockquote>

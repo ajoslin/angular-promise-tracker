@@ -1,4 +1,11 @@
+/*
+ * angular-promise-tracker
+ * http://github.com/ajoslin/angular-promise-tracker
+ * All copyright waived with CC-0 license
+ */
+
 angular.module('promiseTracker', [])
+
 .factory('promiseTracker', ['$q', function($q) {
   var self = this;
   var trackers = {};
@@ -69,9 +76,15 @@ angular.module('promiseTracker', [])
     return trackers[trackerName];
   };
 }])
+
 .config(['$httpProvider', function($httpProvider) {
   $httpProvider.responseInterceptors.push('trackerResponseInterceptor');
 }])
+
+/*
+ * Intercept all http requests that have a `tracker` option in their config,
+ * and add that http promise to the specified `tracker`
+ */
 .factory('trackerResponseInterceptor', ['$q', 'promiseTracker', '$injector', function($q, promiseTracker, $injector) {
   //We use $injector get around circular dependency problem for $http
   var $http;
@@ -82,6 +95,7 @@ angular.module('promiseTracker', [])
     var requestConfig = $http.pendingRequests[$http.pendingRequests.length-1];
     var trackerConfig;
     if ((trackerConfig = requestConfig.tracker)) {
+      //Allow an array of trackers: $http.get('things', {tracker: ['itemTracker', 'stuffTracker']}
       if (!angular.isArray(trackerConfig)) {
         trackerConfig = [trackerConfig];
       }
@@ -91,4 +105,6 @@ angular.module('promiseTracker', [])
     }
     return promise;
   };
-}]);
+}])
+
+;

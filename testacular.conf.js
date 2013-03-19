@@ -10,10 +10,13 @@ basePath = '.';
 files = [
   JASMINE,
   JASMINE_ADAPTER,
-  'test/lib/angular.js',
-  'test/lib/angular-mocks.js',
-  'src/*.js',
-  'test/unit/*.js'
+  'test-lib/angular.js',
+  'test-lib/angular-mocks.js',
+  '*.js'
+];
+
+exclude = [
+  'testacular.conf.js'
 ];
 
 // test results reporter to use

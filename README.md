@@ -13,66 +13,60 @@ Instead, you want different indicators while different types of request are load
 
 Well, [sigh no more](http://www.youtube.com/watch?v=eltHv58l8ig) my dear friend, your troubles are over.
 
-We now have an easy solution for ya! Here's how it looks.
-
--
 
 * Throw a promiseTracker onto your scope
 
-```js
-function MyCtrl($scope, promiseTracker) {
-  $scope.pizzaTracker = promiseTracker('pizza');
-}
-```
-
--
+  ```js
+  function MyCtrl($scope, promiseTracker) {
+    $scope.pizzaTracker = promiseTracker('pizza');
+  }
+  ```
 
 * Do some requests, and in their config add in a little option called `tracker`
 
-```js
-$http.get('/pizzaFlavor', { tracker: 'pizza' });
-$http.get('/pizzaType', { tracker: 'pizza' });
-$http.get('/pizzaCrust', { tracker: 'pizza' });
-```
-
--
+  ```js
+  $http.get('/pizzaFlavor', { tracker: 'pizza' });
+  $http.get('/pizzaType', { tracker: 'pizza' });
+  $http.get('/pizzaCrust', { tracker: 'pizza' });
+  ```
 
 * Now the awesomes happen: `pizzaTracker.active()` will be true whenever any request with `tracker: 'pizza'` is waiting for response!
  
 
-```html
-<div ng-show="pizzaTracker.active()" style="background: pink;">
-  Loading some pizza data for ya, sir! ...
-</div>
-```
-
--
+  ```html
+  <div ng-show="pizzaTracker.active()" style="background: pink;">
+    Loading some pizza data for ya, sir! ...
+  </div>
+  ```
 
 * But wait, there's more! You can also catch cool events when stuff happens on any pizza promise...
 
-
-```js
-$scope.pizzaTracker.on('error', function(response) {
-  $scope.pizzaError = "Uh oh, some sort of pizza error happened! " + response.data;
-});
-$http.get('/pizzaError', { tracker: 'pizza' });
-```
-```html
-<b ng-show="pizzaError" style="color:red;">!! {{pizzaError}} !!</b>
-```
+  ```js
+  $scope.pizzaTracker.on('error', function(response) {
+    $scope.pizzaError = "Uh oh, some sort of pizza error happened! " + response.data;
+  });
+  $http.get('/pizzaError', { tracker: 'pizza' });
+  ```
+  ```html
+  <b ng-show="pizzaError" style="color:red;">!! {{pizzaError}} !!</b>
+  ```
 
 You can catch any of these events: `'error'`, `'success'`, `'start'`, `'done'`.  Hopefully they all make sense.
 
--
-
 *  Oh, and did I mention... you can attach any old promise to your pizza tracker.  Not just http requests!
 
-```js
-var myPizzaPromise = $q.defer();
-$scope.pizzaTracker.addPromise(myPizzaPromise.promise);
-```
+  ```js
+  var myPizzaPromise = $q.defer();
+  $scope.pizzaTracker.addPromise(myPizzaPromise.promise);
+  ```
+
+-
 
 ## Development
 
-* Install jshint and uglifyjs with `npm install -g uglifyjs jshint`
-* Run `make` to build, `make test` to single run tests, and `make server` to start the test server
+* Install testacular with `npm install -g testacular` to run tests
+* Run `testacular start` to start the test server and re-run tests on changes
+
+## License
+
+> <a rel="license" href="http://creativecommons.org/publicdomain/mark/1.0/"> <img src="http://i.creativecommons.org/p/mark/1.0/80x15.png" style="border-style: none;" alt="Public Domain Mark" /> </a> <span property="dct:title">angular-promise-tracker</span> by <a href="http://andybam.com" rel="dct:creator"><span property="dct:title">Andy Joslin</span></a> is free of known copyright restrictions.
