@@ -1,7 +1,13 @@
 angular-promise-tracker
 =======================
 
-[Demo](http://plnkr.co/edit/SHtk7eSrbs1dfoQawPCW?p=preview)
+* [Demo](http://plnkr.co/edit/SHtk7eSrbs1dfoQawPCW?p=preview)
+* [Documentation](https://github.com/ajoslin/angular-promise-tracker/wiki)
+* [Changleog](https://github.com/ajoslin/angular-promise-tracker/tree/master/CHANGELOG.md)
+* [License](#license)
+
+
+## Eh, what?
 
 So you're building your angular app.  And you want a loading spinner.
 
@@ -67,6 +73,6 @@ You can catch any of these events: `'error'`, `'success'`, `'start'`, `'done'`. 
 * Install karma with `npm install -g karma` to run tests
 * Run `karma start` to start the test server and re-run tests on changes
 
-## License
+## <a id="license"></a>License
 
 > <a rel="license" href="http://creativecommons.org/publicdomain/mark/1.0/"> <img src="http://i.creativecommons.org/p/mark/1.0/80x15.png" style="border-style: none;" alt="Public Domain Mark" /> </a> <span property="dct:title">angular-promise-tracker</span> by <a href="http://andybam.com" rel="dct:creator"><span property="dct:title">Andy Joslin</span></a> is free of known copyright restrictions.
