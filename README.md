@@ -64,8 +64,8 @@ You can catch any of these events: `'error'`, `'success'`, `'start'`, `'done'`. 
 
 ## Development
 
-* Install testacular with `npm install -g testacular` to run tests
-* Run `testacular start` to start the test server and re-run tests on changes
+* Install karma with `npm install -g karma` to run tests
+* Run `karma start` to start the test server and re-run tests on changes
 
 ## License
 
