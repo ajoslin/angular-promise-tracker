@@ -34,6 +34,15 @@ angular.module('promiseTracker', [])
       };
       self.setMinDuration(options.minDuration);
 
+      //Allow an option "maximum duration" that the tracker can stay active.
+      //Ideally, the user would resolve his promises after a certain time to 
+      //achieve this 'maximum duration' option, but there are a few cases
+      //where it is necessary anyway.
+      self.setMaxDuration = function(maximum) {
+        self._maxDuration = maximum;
+      };
+      self.setMaxDuration(options.maxDuration);
+
       //## active()
       //Returns whether the promiseTracker is active - detect if we're 
       //currently tracking any promises.
@@ -72,15 +81,21 @@ angular.module('promiseTracker', [])
         fireEvent('start', startArgs);
 
         //If the tracker was just inactive and this the first in the list of
-        //promises, we reset our 'minimum duration' again.
+        //promises, we reset our 'minimum duration' and 'maximum duration'
+        //again.
         if (trackedPromises.length == 1) {
           if (self._minDuration) {
-            self.waitPromise = $timeout(angular.noop, self._minDuration);
+            self.minPromise = $timeout(angular.noop, self._minDuration);
           } else {
-            self.waitPromise = $q.when(true);
+            self.minPromise = $q.when(true);
+          }
+
+          if (self._maxDuration) {
+            self.maxPromise = $timeout(deferred.resolve, self._maxDuration);
           }
         }
         deferred.promise.then(onDone(false), onDone(true));
+
 
         //Create a callback for when this promise is done. It will remove our
         //tracked promise from the array and call the appropriate event 
@@ -89,11 +104,17 @@ angular.module('promiseTracker', [])
           return function(value) {
             //Before resolving our promise, make sure the minDuration timeout
             //has finished.
-            self.waitPromise.then(function() {
+            self.minPromise.then(function() {
               fireEvent('done', [value, isError]);
               fireEvent(isError ? 'error' : 'success', [value]);
               var index = trackedPromises.indexOf(deferred);
               trackedPromises.splice(index, 1);
+
+              //If this is the last promise cleanup the timeout for maxDuration
+              //so it doesn't stick around
+              if (trackedPromises.length === 0) {
+                $timeout.cancel(self.maxPromise);
+              }
             });
           };
         }

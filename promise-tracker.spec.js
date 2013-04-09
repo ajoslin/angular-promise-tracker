@@ -90,15 +90,6 @@ describe('Promise Tracker', function() {
         expect(myTracker.active()).toBe(false);
       });
 
-      it('should go inactive after tracker.cancel', function() {
-        var d1 = $q.defer();
-        myTracker.addPromise(d1.promise);
-        expect(myTracker.active()).toBe(true);
-        myTracker.cancel();
-        digest();
-        expect(myTracker.active()).toBe(false);
-      });
-
       describe('events', function() {
         var events = ['success','error','done','start'];
         var callbacks, count;
@@ -228,23 +219,51 @@ describe('Promise Tracker', function() {
 
       it('should only fire events after timeout is over', function() {
         var d1 = $q.defer(), d2 = $q.defer();
-        var callback = jasmine.createSpy();
+        var spy = jasmine.createSpy();
         track.addPromise(d1.promise);
         track.addPromise(d2.promise);
-        track.on('done', callback);
+        track.on('done', spy);
         d1.resolve();
         digest();
         expect(track.active()).toBe(true);
-        expect(callback.callCount).toBe(0);
+        expect(spy.callCount).toBe(0);
         $timeout.flush();
-        expect(callback.callCount).toBe(1);
+        expect(spy.callCount).toBe(1);
+        expect(track.active()).toBe(true);
         d2.resolve();
         digest();
-        expect(callback.callCount).toBe(2);
+        expect(spy.callCount).toBe(2);
+        expect(track.active()).toBe(false);
       });
-
     });
 
+    describe('maximum duration', function() {
+      var track, $timeout;
+      beforeEach(inject(function(_$timeout_) {
+        $timeout = _$timeout_;
+        track = promiseTracker('maxxy', {
+          maxDuration: 10000
+        });
+      }));
+
+      it('should end on its own after maxDuration', function() {
+        var d1 = $q.defer();
+        track.addPromise(d1.promise);
+        expect(track.active()).toBe(true);
+        $timeout.flush();
+        expect(track.active()).toBe(false);
+      });
+
+      it('should cleanup the maxDuration timeout after finishing', function() {
+        var d1 = $q.defer();
+        track.addPromise(d1.promise);
+        expect(track.active()).toBe(true);
+        d1.resolve();
+        digest();
+        expect(track.active()).toBe(false);
+        expect($timeout.flush).toThrow();
+      });
+    });
   });
 
   describe('http interceptor', function() {
