@@ -6,76 +6,141 @@
 
 angular.module('promiseTracker', [])
 
-.factory('promiseTracker', ['$q', function($q) {
-  var self = this;
+.provider('promiseTracker', function() {
   var trackers = {};
 
-  function Tracker(name) {
+  this.$get = ['$q', '$timeout', function($q, $timeout) {
     var self = this;
-    var numPending = 0;
-    var callbacks = {
-      start: [], //called when a new promise is added
-      done: [], //called when a promise is resolved (error or success)
-      error: [], //called on error
-      success: [] //called on success
-    };
-    self.active = function() {
-      return numPending > 0;
-    };
-    self.on = self.bind = function(event, cb) {
-      if (!callbacks[event]) {
-        throw "Cannot create callback for event '" + event + 
-        "'. Allowed types: 'start', 'done', 'error', 'success'";
-      }
-      callbacks[event].push(cb);
-      return self;
-    };
-    self.off = self.unbind = function(event, cb) {
-      if (!callbacks[event]) {
-        throw "Cannot create callback for event '" + event + 
-        "'. Allowed types: 'start', 'done', 'error', 'success'";
-      }
-      if (cb) {
-        var idx = callbacks[event].indexOf(cb);
-        callbacks[event].splice(cb, 1);
-      } else {
-        //Erase all events of this type if no cb specified to remvoe
-        callbacks[event].length = 0;
-      }
-      return self;
-    };
 
-    function promiseDone(value, isError) {
-      fireEvent('done', [value, isError]);
-      if (isError) fireEvent('error', [value]);
-      else fireEvent('success', [value]);
-      numPending--;
+    function Tracker(options) {
+      options = options || {};
+      var self = this,
+        //Define our callback types.  The user can catch when a promise starts,
+        //has an error, is successful, or just is done with error or success.
+        callbacks = {
+          start: [], //Start is called when a new promise is added
+          done: [], //Called when a promise is resolved (error or success)
+          error: [], //Called on error.
+          success: [] //Called on success.
+        },
+        trackedPromises = [];
+
+      //Allow an optional "minimum duration" that the tracker has to stay
+      //active for. For example, if minimum duration is 1000ms and the user 
+      //adds three promises that all resolve after 650ms, the tracker will 
+      //still count itself as active until 1000ms have passed.
+      self.setMinDuration = function(minimum) {
+        self._minDuration = minimum;
+      };
+      self.setMinDuration(options.minDuration);
+
+      //## active()
+      //Returns whether the promiseTracker is active - detect if we're 
+      //currently tracking any promises.
+      self.active = function() {
+        return trackedPromises.length > 0;
+      };
+
+      //## cancel()
+      //Resolves all the current promises, immediately ending the tracker.
+      self.cancel = function() {
+        angular.forEach(trackedPromises, function(deferred) {
+          deferred.resolve();
+        });
+      };
+
+      function fireEvent(event, params) {
+        angular.forEach(callbacks[event], function(cb) {
+          cb.apply(self, params || []);
+        });
+      }
+      function minDuration() {
+        return $timeout(options.minDuration);
+      }
+
+      //## addPromise()
+      //Adds a promise to our tracking.
+      self.addPromise = function(promise) {
+        //We create our own promise to track instead of piggybacking on the 
+        //given promise.  This lets us do things like cancel early or add 
+        //a minimum duration.
+        var deferred = $q.defer(),
+          //All arguments after the promise count as args to our 'start' event.
+          startArgs = [].slice.call(arguments, 1);
+
+        trackedPromises.push(deferred);
+        fireEvent('start', startArgs);
+
+        //If the tracker was just inactive and this the first in the list of
+        //promises, we reset our 'minimum duration' again.
+        if (trackedPromises.length == 1) {
+          if (self._minDuration) {
+            self.waitPromise = $timeout(angular.noop, self._minDuration);
+          } else {
+            self.waitPromise = $q.when(true);
+          }
+        }
+        deferred.promise.then(onDone(false), onDone(true));
+
+        //Create a callback for when this promise is done. It will remove our
+        //tracked promise from the array and call the appropriate event 
+        //callbacks depending on whether there was an error or not.
+        function onDone(isError) {
+          return function(value) {
+            //Before resolving our promise, make sure the minDuration timeout
+            //has finished.
+            self.waitPromise.then(function() {
+              fireEvent('done', [value, isError]);
+              fireEvent(isError ? 'error' : 'success', [value]);
+              var index = trackedPromises.indexOf(deferred);
+              trackedPromises.splice(index, 1);
+            });
+          };
+        }
+
+        promise.then(function success(value) {
+          deferred.resolve(value);
+          return value;
+        }, function error(value) {
+          deferred.reject(value);
+          return $q.reject(value);
+        });
+
+        return self;
+      };
+
+      //## on(), bind()
+      self.on = self.bind = function(event, cb) {
+        if (!callbacks[event]) {
+          throw "Cannot create callback for event '" + event + 
+          "'. Allowed types: 'start', 'done', 'error', 'success'";
+        }
+        callbacks[event].push(cb);
+        return self;
+      };
+      self.off = self.unbind = function(event, cb) {
+        if (!callbacks[event]) {
+          throw "Cannot create callback for event '" + event + 
+          "'. Allowed types: 'start', 'done', 'error', 'success'";
+        }
+        if (cb) {
+          var index = callbacks[event].indexOf(cb);
+          callbacks[event].splice(index, 1);
+        } else {
+          //Erase all events of this type if no cb specified to remvoe
+          callbacks[event].length = 0;
+        }
+        return self;
+      };
     }
-    function fireEvent(event, params) {
-      angular.forEach(callbacks[event], function(cb) {
-        cb.apply(self, params || []);
-      });
-    }
-    /* Adds any old promise to our tracking */
-    /* startParam is usually an http request config object */
-    self.addPromise = function(promise, startParam) {
-      numPending++;
-      fireEvent('start', [startParam]);
-      
-      return promise.then(function success(value) {
-        promiseDone(value);
-        return value;
-      }, function error(value) {
-        promiseDone(value, true);
-        return $q.reject(value);
-      });
+    return function promiseTracker(trackerName, options) {
+      if (!trackers[trackerName])  {
+        trackers[trackerName] = new Tracker(options);
+      }
+      return trackers[trackerName];
     };
-  }
-  return function(trackerName) {
-    if (!trackers[trackerName]) trackers[trackerName] = new Tracker(trackerName);
-    return trackers[trackerName];
-  };
-}])
+  }];
+})
 
 .config(['$httpProvider', function($httpProvider) {
   $httpProvider.responseInterceptors.push('trackerResponseInterceptor');

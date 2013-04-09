@@ -32,9 +32,8 @@ describe('Promise Tracker', function() {
       expect(myTracker.active()).toBe(false);
     });
 
-    it('should add a promise and return it', function() {
-      var deferred = $q.defer();
-      expect(typeof myTracker.addPromise(deferred.promise)).toBe('object');
+    it('should add a promise and return self for chaining', function() {
+      expect(myTracker.addPromise($q.defer().promise)).toBe(myTracker);
     });
 
     it('should allow you to add callbacks of the right type', function() {
@@ -90,7 +89,16 @@ describe('Promise Tracker', function() {
         digest();
         expect(myTracker.active()).toBe(false);
       });
-      
+
+      it('should go inactive after tracker.cancel', function() {
+        var d1 = $q.defer();
+        myTracker.addPromise(d1.promise);
+        expect(myTracker.active()).toBe(true);
+        myTracker.cancel();
+        digest();
+        expect(myTracker.active()).toBe(false);
+      });
+
       describe('events', function() {
         var events = ['success','error','done','start'];
         var callbacks, count;
@@ -186,6 +194,57 @@ describe('Promise Tracker', function() {
         });
       });
     });
+
+    describe('minimum duration', function() {
+      var $timeout, track;
+      beforeEach(inject(function(_$timeout_) {
+        $timeout = _$timeout_;
+        track = promiseTracker('track1', {
+          minDuration: 1000
+        });
+      }));
+
+      it('should wait until timeout is over to resolve on first promise', function() {
+        var d = $q.defer();
+        track.addPromise(d.promise);
+        expect(track.active()).toBe(true);
+        d.resolve();
+        digest();
+        expect(track.active()).toBe(true);
+        $timeout.flush();
+        digest();
+        expect(track.active()).toBe(false);
+      });
+
+      it('should go back to not waiting if minDuration is 0', function() {
+        track.setMinDuration(0);
+        var d = $q.defer();
+        track.addPromise(d.promise);
+        expect(track.active()).toBe(true);
+        d.resolve();
+        digest();
+        expect(track.active()).toBe(false);
+      });
+
+      it('should only fire events after timeout is over', function() {
+        var d1 = $q.defer(), d2 = $q.defer();
+        var callback = jasmine.createSpy();
+        track.addPromise(d1.promise);
+        track.addPromise(d2.promise);
+        track.on('done', callback);
+        d1.resolve();
+        digest();
+        expect(track.active()).toBe(true);
+        expect(callback.callCount).toBe(0);
+        $timeout.flush();
+        expect(callback.callCount).toBe(1);
+        d2.resolve();
+        digest();
+        expect(callback.callCount).toBe(2);
+      });
+
+    });
+
   });
 
   describe('http interceptor', function() {
