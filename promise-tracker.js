@@ -63,9 +63,6 @@ angular.module('promiseTracker', [])
           cb.apply(self, params || []);
         });
       }
-      function minDuration() {
-        return $timeout(options.minDuration);
-      }
 
       //## addPromise()
       //Adds a promise to our tracking.
@@ -87,15 +84,14 @@ angular.module('promiseTracker', [])
           if (self._minDuration) {
             self.minPromise = $timeout(angular.noop, self._minDuration);
           } else {
+            //No minDuration means we just instantly resolve for our 'wait'
+            //promise.
             self.minPromise = $q.when(true);
           }
-
           if (self._maxDuration) {
             self.maxPromise = $timeout(deferred.resolve, self._maxDuration);
           }
         }
-        deferred.promise.then(onDone(false), onDone(true));
-
 
         //Create a callback for when this promise is done. It will remove our
         //tracked promise from the array and call the appropriate event 
@@ -110,15 +106,19 @@ angular.module('promiseTracker', [])
               var index = trackedPromises.indexOf(deferred);
               trackedPromises.splice(index, 1);
 
-              //If this is the last promise cleanup the timeout for maxDuration
-              //so it doesn't stick around
-              if (trackedPromises.length === 0) {
+              //If this is the last promise, cleanup the timeout
+              //for maxDuration so it doesn't stick around.
+              if (trackedPromises.length === 0 && self.maxPromise) {
                 $timeout.cancel(self.maxPromise);
               }
             });
           };
         }
 
+        deferred.promise.then(onDone(false), onDone(true));
+
+        //Set it up so the promise we added, once it is resolved, will resolve
+        //our promise tracker promise.
         promise.then(function success(value) {
           deferred.resolve(value);
           return value;
