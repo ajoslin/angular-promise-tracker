@@ -9,15 +9,19 @@ basePath = '.';
 files = [
   JASMINE,
   JASMINE_ADAPTER,
-  'lib/angular.js',
-  'lib/angular-mocks.js',
-  '*.js'
+  'lib/angular-1.0.6.js',
+  'lib/angular-1.0.6-mocks.js',
+  'lib/angular-1.1.4.js',
+  'lib/angular-1.1.4-mocks.js',
+  'promise-tracker.js',
+  'promise-tracker.spec.js'
 ];
 
 
 // list of files to exclude
 exclude = [
-  'karma.conf.js'
+  'lib/angular-1.1.4.js',
+  'lib/angular-1.1.4-mocks.js'
 ];
 
 

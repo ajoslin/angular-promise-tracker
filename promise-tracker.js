@@ -64,18 +64,19 @@ angular.module('promiseTracker', [])
         });
       }
 
-      //## addPromise()
-      //Adds a promise to our tracking.
-      self.addPromise = function(promise) {
-        //We create our own promise to track instead of piggybacking on the 
-        //given promise.  This lets us do things like cancel early or add 
+      //Create a promise that will make our tracker active until it is resolved.
+      //@param startArg: params to pass to 'start' event
+      //@return deferred - our deferred object that is being tracked
+      function createPromise(startArg) {
+        //We create our own promise to track. This usually piggybacks on a given
+        //promise, or we give it back and someone else can resolve it (like 
+        //with the httpResponseInterceptor).
+        //Using our own promise also lets us do things like cancel early or add 
         //a minimum duration.
-        var deferred = $q.defer(),
-          //All arguments after the promise count as args to our 'start' event.
-          startArgs = [].slice.call(arguments, 1);
+        var deferred = $q.defer();
 
         trackedPromises.push(deferred);
-        fireEvent('start', startArgs);
+        fireEvent('start', [startArg]);
 
         //If the tracker was just inactive and this the first in the list of
         //promises, we reset our 'minimum duration' and 'maximum duration'
@@ -117,8 +118,15 @@ angular.module('promiseTracker', [])
 
         deferred.promise.then(onDone(false), onDone(true));
 
-        //Set it up so the promise we added, once it is resolved, will resolve
-        //our promise tracker promise.
+        return deferred;
+      }
+
+      //## addPromise()
+      //Adds a given promise to our tracking
+      self.addPromise = function(promise, startArg) {
+        var deferred = createPromise(startArg);
+
+        //When given promise is done, resolve our created promise
         promise.then(function success(value) {
           deferred.resolve(value);
           return value;
@@ -127,7 +135,14 @@ angular.module('promiseTracker', [])
           return $q.reject(value);
         });
 
-        return self;
+        return deferred;
+      };
+
+      //## createPromise()
+      //Create a new promise and return it, and let the user resolve it how
+      //they see fit.
+      self.createPromise = function(startArg) {
+        return createPromise(startArg);
       };
 
       //## on(), bind()
@@ -163,33 +178,57 @@ angular.module('promiseTracker', [])
   }];
 })
 
-.config(['$httpProvider', function($httpProvider) {
-  $httpProvider.responseInterceptors.push('trackerResponseInterceptor');
+.config(['$httpProvider', function($http) {
+  if ($http.interceptors) {
+    //Support angularJS 1.1.4: interceptors
+    $http.interceptors.push('trackerHttpInterceptor');
+  } else {
+    //Support angularJS pre 1.1.4: responseInterceptors
+    $http.responseInterceptors.push('trackerResponseInterceptor');
+  }
 }])
 
 /*
  * Intercept all http requests that have a `tracker` option in their config,
  * and add that http promise to the specified `tracker`
  */
+
+//angular versions before 1.1.4 use responseInterceptor format
 .factory('trackerResponseInterceptor', ['$q', 'promiseTracker', '$injector', function($q, promiseTracker, $injector) {
   //We use $injector get around circular dependency problem for $http
   var $http;
   return function spinnerResponseInterceptor(promise) {
-    if (!$http) $http = $injector.get('$http'); 
-    
+    if (!$http) $http = $injector.get('$http'); //lazy-load http
     //We know the latest request is always going to be last in the list
-    var requestConfig = $http.pendingRequests[$http.pendingRequests.length-1];
-    var trackerConfig;
-    if ((trackerConfig = requestConfig.tracker)) {
-      //Allow an array of trackers: $http.get('things', {tracker: ['itemTracker', 'stuffTracker']}
-      if (!angular.isArray(trackerConfig)) {
-        trackerConfig = [trackerConfig];
-      }
-      angular.forEach(trackerConfig, function(trackerName) {
-        promiseTracker(trackerName).addPromise(promise, requestConfig);
-      });
+    var config = $http.pendingRequests[$http.pendingRequests.length-1];
+    if (config.tracker) {
+      promiseTracker(config.tracker).addPromise(promise, config);
     }
     return promise;
+  };
+}])
+
+.factory('trackerHttpInterceptor', ['$q', 'promiseTracker', '$injector', function($q, promiseTracker, $injector) {
+  return {
+    request: function(config) {
+      if (config.tracker) {
+        var deferred = promiseTracker(config.tracker).createPromise(config);
+        config.$promiseTrackerDeferred = deferred;
+      }
+      return $q.when(config);
+    },
+    response: function(response) {
+      if (response.config.$promiseTrackerDeferred) {
+        response.config.$promiseTrackerDeferred.resolve(response);
+      }
+      return $q.when(response);
+    },
+    responseError: function(response) {
+      if (response.config.$promiseTrackerDeferred) {
+        response.config.$promiseTrackerDeferred.reject(response);
+      }
+      return $q.reject(response);
+    }
   };
 }])
 

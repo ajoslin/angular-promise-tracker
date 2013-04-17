@@ -32,8 +32,8 @@ describe('Promise Tracker', function() {
       expect(myTracker.active()).toBe(false);
     });
 
-    it('should add a promise and return self for chaining', function() {
-      expect(myTracker.addPromise($q.defer().promise)).toBe(myTracker);
+    it('should add a promise and return our new tracker promise', function() {
+      expect(typeof myTracker.addPromise($q.defer().promise)).toBe('object');
     });
 
     it('should allow you to add callbacks of the right type', function() {
@@ -284,6 +284,7 @@ describe('Promise Tracker', function() {
 
     it('should track an http request with tracker option', function() {
       $http.get('/pizza', { tracker: 'tracky' });
+      digest();
       expect(tracky.active()).toBe(true);
       $httpBackend.flush();
       expect(tracky.active()).toBe(false);
@@ -291,6 +292,7 @@ describe('Promise Tracker', function() {
 
     it('should create a new tracker if http request gives new name', function() {
       $http.get('/pizza', { tracker: 'jonny' });
+      digest();
       expect(promiseTracker('jonny').active()).toBe(true);
       $httpBackend.flush();
       expect(promiseTracker('jonny').active()).toBe(false);
@@ -312,6 +314,7 @@ describe('Promise Tracker', function() {
 
       it('should call success, start, done callbacks', function() {
         $http.get('/pizza', { tracker: 'tracky' });
+        digest();
         expect(responses.start[0].url).toBe('/pizza');
         $httpBackend.flush();
         expect(responses.done[0].data).toBe('pepperoni');
