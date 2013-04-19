@@ -11,8 +11,8 @@ files = [
   JASMINE_ADAPTER,
   'lib/angular-1.0.6.js',
   'lib/angular-1.0.6-mocks.js',
-  'lib/angular-1.1.4.js',
-  'lib/angular-1.1.4-mocks.js',
+  //'lib/angular-1.1.4.js',
+  //'lib/angular-1.1.4-mocks.js',
   'promise-tracker.js',
   'promise-tracker.spec.js'
 ];
@@ -20,8 +20,6 @@ files = [
 
 // list of files to exclude
 exclude = [
-  'lib/angular-1.1.4.js',
-  'lib/angular-1.1.4-mocks.js'
 ];
 
 

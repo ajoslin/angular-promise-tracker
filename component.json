@@ -1,0 +1,13 @@
+{
+  "name": "promise-tracker",
+  "version": "1.2.0",
+  "main": "promise-tracker.js",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "components",
+    "Makefile",
+    "lib",
+    "*.spec.js"
+  ]
+}
