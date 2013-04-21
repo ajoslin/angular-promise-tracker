@@ -1,7 +1,7 @@
 angular-promise-tracker
 =======================
 
-* [Demo](http://plnkr.co/edit/SHtk7eSrbs1dfoQawPCW?p=preview)
+* [Demo](http://plnkr.co/edit/3uAe0NdXLz1lCYlhpaMp?p=preview)
 * [Help](https://github.com/ajoslin/angular-promise-tracker/wiki)
 * [Changes](https://github.com/ajoslin/angular-promise-tracker/tree/master/CHANGELOG.md)
 * [License](#license)
