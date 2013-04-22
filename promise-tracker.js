@@ -81,7 +81,7 @@ angular.module('promiseTracker', [])
         //If the tracker was just inactive and this the first in the list of
         //promises, we reset our 'minimum duration' and 'maximum duration'
         //again.
-        if (trackedPromises.length == 1) {
+        if (trackedPromises.length === 1) {
           if (self._minDuration) {
             self.minPromise = $timeout(angular.noop, self._minDuration);
           } else {
