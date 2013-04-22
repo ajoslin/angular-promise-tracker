@@ -9,10 +9,8 @@ basePath = '.';
 files = [
   JASMINE,
   JASMINE_ADAPTER,
-  'lib/angular-1.0.6.js',
-  'lib/angular-1.0.6-mocks.js',
-  //'lib/angular-1.1.4.js',
-  //'lib/angular-1.1.4-mocks.js',
+  'components/angular/angular.min.js',
+  'components/angular-mocks/angular-mocks.js',
   'promise-tracker.js',
   'promise-tracker.spec.js'
 ];
