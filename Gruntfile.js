@@ -12,13 +12,13 @@ module.exports = function (grunt) {
     meta: {
       banner: '/*! <%= pkg.name %> - v<%= pkg.version %> - ' +
         '<%= grunt.template.today("yyyy-mm-dd") %>\n' +
-        '<%= pkg.homepage %>' +
+        '* <%= pkg.homepage %>\n' +
         '* Created by <%= pkg.author.name %>; ' +
-        ' Licensed under <%= pkg.license %> */'
+        ' Licensed under <%= pkg.license %> \n*/'
     },
     delta: {
       scripts: {
-        files: ['src/**/*.js'],
+        files: ['src/**/*.js', 'test/unit/**/*.js'],
         tasks: ['jshint', 'karma:watchold:run', 'karma:watchnew:run']
       },
       gruntfile: {

@@ -6,7 +6,8 @@ files = [
   JASMINE_ADAPTER,
   'components/angular-unstable/angular.js',
   'components/angular-mocks/angular-mocks.js',
-  'src/**/*.js'
+  'src/**/*.js',
+  'test/unit/**/*.js'
 ];
 
 exclude = [
