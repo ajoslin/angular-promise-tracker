@@ -1,5 +1,5 @@
 
-angular.module('promiseTracker')
+angular.module('ajoslin.promise-tracker')
 
 /*
  * Intercept all http requests that have a `tracker` option in their config,

@@ -1,5 +1,5 @@
 describe('Promise Tracker', function() {
-  beforeEach(module('promiseTracker'));
+  beforeEach(module('ajoslin.promise-tracker'));
   
   var promiseTracker, $httpBackend, $http, $q, $rootScope;
   beforeEach(inject(function(_promiseTracker_, _$httpBackend_, _$http_, _$q_, _$rootScope_) {

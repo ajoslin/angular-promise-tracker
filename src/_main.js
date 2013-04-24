@@ -1,4 +1,4 @@
-angular.module('promiseTracker', [])
+angular.module('ajoslin.promise-tracker', [])
 
 .config(function($httpProvider) {
   if ($httpProvider.interceptors) {

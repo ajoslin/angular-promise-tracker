@@ -8,6 +8,7 @@ module.exports = function (grunt) {
   grunt.loadNpmTasks('grunt-ngmin');
 
   grunt.initConfig({
+    dist: '.',
     pkg: grunt.file.readJSON('package.json'),
     meta: {
       banner: '/*! <%= pkg.name %> - v<%= pkg.version %> - ' +
@@ -41,7 +42,7 @@ module.exports = function (grunt) {
           banner: "<%= meta.banner %>"
         },
         files: {
-          'dist/promise-tracker.js': ['src/**/*.js', '!src/**/*.spec.js']
+          '<%= dist %>/promise-tracker.js': ['src/**/*.js', '!src/**/*.spec.js']
         }
       }
     },
@@ -49,7 +50,7 @@ module.exports = function (grunt) {
       dist: {
         files: {
           //Have ngmin just create a .min file, that will then be actually mind
-          'dist/promise-tracker.min.js': 'dist/promise-tracker.js'
+          '<%= dist %>/promise-tracker.min.js': '<%= dist %>/promise-tracker.js'
         }
       }
     },
@@ -57,7 +58,7 @@ module.exports = function (grunt) {
       dist: {
         files: {
           //Actually minify our ngmin'd file
-          'dist/promise-tracker.min.js': 'dist/promise-tracker.min.js'
+          '<%= dist %>/promise-tracker.min.js': '<%= dist %>/promise-tracker.min.js'
         }
       }
     },
