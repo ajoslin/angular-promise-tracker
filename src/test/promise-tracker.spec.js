@@ -110,6 +110,7 @@ describe('Promise Tracker', function() {
         it('should fire "start" with param when promise is added', function() {
           expect(count.start).toBe(0);
           myTracker.addPromise($q.defer().promise, 3);
+          expect(count.done).toBe(0);
           expect(count.start).toBe(3);
         });
         it('should fire "done" with param when promise is resolved or rejected', function() {
@@ -277,6 +278,7 @@ describe('Promise Tracker', function() {
 
     it('should not track an http request with no tracker option', function() {
       $http.get('/pizza');
+      digest();
       expect(tracky.active()).toBe(false);
       $httpBackend.flush();
       expect(tracky.active()).toBe(false);
@@ -322,6 +324,7 @@ describe('Promise Tracker', function() {
       });
       it('should call success and error callbacks', function() {
         $http.get('/error', { tracker: 'tracky' });
+        digest();
         $httpBackend.flush();
         expect(responses.done[0].data).toBe('monkeys');
         expect(responses.error[0].data).toBe('monkeys');

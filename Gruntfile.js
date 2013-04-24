@@ -1,27 +1,33 @@
 module.exports = function (grunt) {
 
+  grunt.loadNpmTasks('grunt-contrib-concat');
   grunt.loadNpmTasks('grunt-contrib-watch');
   grunt.loadNpmTasks('grunt-contrib-jshint');
   grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-karma');
+  grunt.loadNpmTasks('grunt-ngmin');
 
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
     meta: {
-      banner: '/*! <%= pkg.title || pkg.name %> - v<%= pkg.version %> - ' +
+      banner: '/*! <%= pkg.name %> - v<%= pkg.version %> - ' +
         '<%= grunt.template.today("yyyy-mm-dd") %>\n' +
-        '<%= pkg.homepage ? "* " + pkg.homepage + "\n" : "" %>' +
-        '* Copyright (c) <%= grunt.template.today("yyyy") %> <%= pkg.author.name %>;' +
-        ' Licensed <%= _.pluck(pkg.licenses, "type").join(", ") %> */'
+        '<%= pkg.homepage %>' +
+        '* Created by <%= pkg.author.name %>; ' +
+        ' Licensed under <%= pkg.license %> */'
     },
-    watch: {
+    delta: {
       scripts: {
-        files: ['Gruntfile.js', 'promise-tracker.js', '*.spec.js'],
-        tasks: ['jshint', 'karma']
+        files: ['src/**/*.js'],
+        tasks: ['jshint', 'karma:watchold:run', 'karma:watchnew:run']
+      },
+      gruntfile: {
+        files: ['Gruntfile.js'],
+        tasks: ['jshint']
       }
     },
     jshint: {
-      all: ['Gruntfile.js', 'promise-tracker.js', '*/.spec.js'],
+      all: ['Gruntfile.js', 'src/**/*.js'],
       options: {
         eqeqeq: true,
         globals: {
@@ -29,22 +35,59 @@ module.exports = function (grunt) {
         }
       }
     },
-    uglify: {
-      src: {
+    concat: {
+      dist: {
+        options: {
+          banner: "<%= meta.banner %>"
+        },
         files: {
-          'promise-tracker.min.js': 'promise-tracker.js'
+          'dist/promise-tracker.js': ['src/**/*.js', '!src/**/*.spec.js']
+        }
+      }
+    },
+    ngmin: {
+      dist: {
+        files: {
+          //Have ngmin just create a .min file, that will then be actually mind
+          'dist/promise-tracker.min.js': 'dist/promise-tracker.js'
+        }
+      }
+    },
+    uglify: {
+      dist: {
+        files: {
+          //Actually minify our ngmin'd file
+          'dist/promise-tracker.min.js': 'dist/promise-tracker.min.js'
         }
       }
     },
     karma: {
-      unit: {
-        configFile: 'karma.conf.js',
-        singleRun: true
+      watchold: {
+        configFile: 'test/karma-oldangular.conf.js',
+        background: true
+      },
+      watchnew: {
+        configFile: 'test/karma-newangular.conf.js',
+        background: true
+      },
+      continuousold: {
+        configFile: 'test/karma-oldangular.conf.js',
+        singleRun: true,
+        browsers: ['Chrome']
+      },
+      continuousnew: {
+        configFile: 'test/karma-newangular.conf.js',
+        singleRun: true,
+        browsers: ['Chrome']
       }
     }
   });
 
-  grunt.registerTask('default', ['jshint', 'karma']);
-  grunt.registerTask('test', ['karma']);
-  grunt.registerTask('build', ['jshint', 'karma', 'uglify']);
+  //Rename watch to delta so we can run a couple task before grunt watch starts
+  grunt.renameTask('watch', 'delta');
+  grunt.registerTask('watch', ['karma:watchold', 'karma:watchnew', 'delta']);
+
+  grunt.registerTask('default', ['jshint', 'test', 'build']);
+  grunt.registerTask('test', ['karma:continuousold', 'karma:continuousnew']);
+  grunt.registerTask('build', ['concat', 'ngmin', 'uglify']);
 };
