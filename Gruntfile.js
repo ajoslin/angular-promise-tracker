@@ -43,7 +43,7 @@ module.exports = function (grunt) {
           banner: "<%= meta.banner %>"
         },
         files: {
-          '<%= dist %>/promise-tracker.js': ['src/**/*.js', '!src/**/*.spec.js']
+          '<%= dist %>/promise-tracker.js': ['src/**/*.js']
         }
       }
     },

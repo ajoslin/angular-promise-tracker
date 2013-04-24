@@ -36,7 +36,7 @@ ddescribe('ngResource', function() {
     expect(myTracker.active()).toBe(false);
   });
 
-  it('shouldn\'t instantly resolve if resource instance promise is already resolved', function() {
+  it('should instantly resolve if resource instance promise is already resolved', function() {
     var p = new Pizza();
     p.$get();
     myTracker.addPromise( $q.when(p.$then) );
@@ -48,7 +48,7 @@ ddescribe('ngResource', function() {
     expect(myTracker.active()).toBe(false);
   });
 
-  it('shouldn\'t instantly resolve if $resource promise is already resolved', function() {
+  it('should instantly resolve if $resource promise is already resolved', function() {
     Pizza.get();
     myTracker.addPromise( $q.when(Pizza.$then) );
     expect(myTracker.active()).toBe(true);
