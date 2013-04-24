@@ -1,4 +1,4 @@
-ddescribe('ngResource', function() {
+describe('ngResource', function() {
   beforeEach(module('ajoslin.promise-tracker', 'ngResource'));
 
   var $q, Pizza, $rootScope, $httpBackend, myTracker;
@@ -23,6 +23,7 @@ ddescribe('ngResource', function() {
     var pizza = Pizza.get();
     myTracker.addPromise( $q.when(Pizza.$then) );
     expect(myTracker.active()).toBe(true);
+    digest();
     $httpBackend.flush();
     expect(myTracker.active()).toBe(false);
   });
@@ -32,6 +33,7 @@ ddescribe('ngResource', function() {
     p.$get();
     myTracker.addPromise( $q.when(p.$then) );
     expect(myTracker.active()).toBe(true);
+    digest();
     $httpBackend.flush();
     expect(myTracker.active()).toBe(false);
   });
@@ -41,6 +43,7 @@ ddescribe('ngResource', function() {
     p.$get();
     myTracker.addPromise( $q.when(p.$then) );
     expect(myTracker.active()).toBe(true);
+    digest();
     $httpBackend.flush();
     expect(myTracker.active()).toBe(false);
     myTracker.addPromise( $q.when(p.$then) );
@@ -52,6 +55,7 @@ ddescribe('ngResource', function() {
     Pizza.get();
     myTracker.addPromise( $q.when(Pizza.$then) );
     expect(myTracker.active()).toBe(true);
+    digest();
     $httpBackend.flush();
     expect(myTracker.active()).toBe(false);
     myTracker.addPromise( $q.when(Pizza.$then) );
