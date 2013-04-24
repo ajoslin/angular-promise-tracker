@@ -1,6 +1,6 @@
 *.swp
 npm-debug.log
 .DS_Store
-dist
+demo
 components
 node_modules

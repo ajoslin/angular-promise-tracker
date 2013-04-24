@@ -120,9 +120,9 @@ angular.module('ajoslin.promise-tracker')
         });
       };
 
-      function fireEvent(event, params) {
+      function fireEvent(event, param) {
         angular.forEach(callbacks[event], function(cb) {
-          cb.apply(self, params || []);
+          cb.call(self, param);
         });
       }
 
@@ -138,7 +138,7 @@ angular.module('ajoslin.promise-tracker')
         var deferred = $q.defer();
 
         trackedPromises.push(deferred);
-        fireEvent('start', [startArg]);
+        fireEvent('start', startArg);
 
         //If the tracker was just inactive and this the first in the list of
         //promises, we reset our 'minimum duration' and 'maximum duration'
@@ -164,8 +164,8 @@ angular.module('ajoslin.promise-tracker')
             //Before resolving our promise, make sure the minDuration timeout
             //has finished.
             self.minPromise.then(function() {
-              fireEvent('done', [value, isError]);
-              fireEvent(isError ? 'error' : 'success', [value]);
+              fireEvent('done', value);
+              fireEvent(isError ? 'error' : 'success', value);
               var index = trackedPromises.indexOf(deferred);
               trackedPromises.splice(index, 1);
 
