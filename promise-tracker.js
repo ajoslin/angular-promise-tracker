@@ -1,7 +1,9 @@
-/*! angular-promise-tracker - v1.2.0 - 2013-04-24
-* https://github.com/ajoslin/angular-promise-tracker
-* Created by Andy Joslin;  Licensed under Public Domain 
-*/angular.module('ajoslin.promise-tracker', [])
+/*
+ * promise-tracker - v1.2.0 - 2013-04-24
+ * http://github.com/ajoslin/angular-promise-tracker
+ * Created by Andy Joslin; Licensed under Public Domain
+ */
+angular.module('ajoslin.promise-tracker', [])
 
 .config(function($httpProvider) {
   if ($httpProvider.interceptors) {

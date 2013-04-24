@@ -8,6 +8,7 @@
     "type": "git",
     "url": "git://github.com/ajoslin/angular-promise-tracker"
   },
+  "license": "Public Domain",
   "main": "./promise-tracker.js",
   "ignore": [
     "**/.*",

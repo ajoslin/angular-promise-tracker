@@ -1,15 +1,10 @@
 {
   "name": "angular-promise-tracker",
-  "version": "1.2.0",
-  "description": "Easily add spinners or general request tracking to your angular app.",
-  "scripts": {
-    "test": "grunt karma"
-  },
+  "version": "0.0.0",
   "author": {
     "name": "Andy Joslin"
   },
   "homepage": "https://github.com/ajoslin/angular-promise-tracker",
-  "license": "Public Domain",
   "devDependencies": {
     "karma": "~0.8.5",
     "grunt": "~0.4.1",
