@@ -21,7 +21,6 @@
   "dependencies": {
     "angular": "1.0.6",
     "angular-mocks": "1.0.6",
-    "angular-unstable": "1.1.4",
-    "angular-resource": "~1.0.6"
+    "angular-unstable": "1.1.4"
   }
 }
