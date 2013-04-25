@@ -1,3 +1,13 @@
+# 1.3.0 (2013-04-25)
+
+## Features
+### conventional-changelog
+
+* Introduce grunt-conventional-changelog (f8b7d23)
+
+
+
+
 # Version 1.2 (Apr 25, 2013)
 
 ## Features
