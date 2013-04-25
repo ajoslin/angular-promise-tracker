@@ -1,3 +1,4 @@
+
 describe('ngResource', function() {
   beforeEach(module('ajoslin.promise-tracker', 'ngResource'));
 
