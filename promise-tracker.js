@@ -1,5 +1,5 @@
 /*
- * promise-tracker - v1.2.0 - 2013-04-24
+ * promise-tracker - v1.2.0 - 2013-04-25
  * http://github.com/ajoslin/angular-promise-tracker
  * Created by Andy Joslin; Licensed under Public Domain
  */
@@ -71,7 +71,7 @@ angular.module('ajoslin.promise-tracker')
 .provider('promiseTracker', function() {
   var trackers = {};
 
-  this.$get = ['$q', '$timeout', function($q, $timeout) {
+  this.$get = function($q, $timeout) {
     var self = this;
 
     function Tracker(options) {
@@ -189,7 +189,8 @@ angular.module('ajoslin.promise-tracker')
         var deferred = createPromise(startArg);
 
         //When given promise is done, resolve our created promise
-        promise.then(function success(value) {
+        //Allow $then for angular-resource objects
+        (promise.$then || promise.then)(function success(value) {
           deferred.resolve(value);
           return value;
         }, function error(value) {
@@ -237,6 +238,6 @@ angular.module('ajoslin.promise-tracker')
       }
       return trackers[trackerName];
     };
-  }];
+  };
 })
 ;
