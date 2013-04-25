@@ -1,3 +1,21 @@
+# Version 1.2 (Apr 25, 2013)
+
+## Features
+
+**Change name of module to `ajoslin.promise-tracker`**
+
+  - Follows [AngularJS component spec](http://github.com/angular/angular-component-spec). 
+  - To migrate, just change the name of the module included. For example: `angular.module('myApp', ['ajoslin.promise-tracker']);`
+
+**Add support for angular-resource**
+
+  ```js
+  var Books = new $resource('/books');
+  var bookList = Books.get();
+  myTracker.addPromise(bookList);
+  ```
+  - See more examples in the [promiseTracker angular-resource tests](http://github.com/ajoslin/angular-promise-tracker/tree/master/test/unit/resource.spec.js).
+
 
 # Version 1.1 (Apr 9, 2013)
 
