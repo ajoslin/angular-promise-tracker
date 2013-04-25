@@ -69,6 +69,39 @@ angular.module('ajoslin.promise-tracker')
 angular.module('ajoslin.promise-tracker')
 
 .provider('promiseTracker', function() {
+
+  /**
+   * uid(), from angularjs source
+   *
+   * A consistent way of creating unique IDs in angular. The ID is a sequence of alpha numeric
+   * characters such as '012ABC'. The reason why we are not using simply a number counter is that
+   * the number string gets longer over time, and it can also overflow, where as the nextId
+   * will grow much slower, it is a string, and it will never overflow.
+   *
+   * @returns string unique alpha-numeric string
+   */
+  var uid = ['0','0','0'];
+  function nextUid() {
+    var index = uid.length;
+    var digit;
+
+    while(index) {
+      index--;
+      digit = uid[index].charCodeAt(0);
+      if (digit === 57 /*'9'*/) {
+        uid[index] = 'A';
+        return uid.join('');
+      }
+      if (digit === 90  /*'Z'*/) {
+        uid[index] = '0';
+      } else {
+        uid[index] = String.fromCharCode(digit + 1);
+        return uid.join('');
+      }
+    }
+    uid.unshift('0');
+    return uid.join('');
+  }
   var trackers = {};
 
   this.$get = function($q, $timeout) {
@@ -120,9 +153,12 @@ angular.module('ajoslin.promise-tracker')
         });
       };
 
-      function fireEvent(event, param) {
-        angular.forEach(callbacks[event], function(cb) {
-          cb.call(self, param);
+      //Fire an event bound with #on().
+      //@param options: {id: uniqueId, event: string, value: someValue}
+      //Calls registered callbacks for `event` with params (`value`, `id`)
+      function fireEvent(options) {
+        angular.forEach(callbacks[options.event], function(cb) {
+          cb.call(self, options.value, options.id);
         });
       }
 
@@ -136,9 +172,14 @@ angular.module('ajoslin.promise-tracker')
         //Using our own promise also lets us do things like cancel early or add 
         //a minimum duration.
         var deferred = $q.defer();
+        var promiseId = nextUid();
 
         trackedPromises.push(deferred);
-        fireEvent('start', startArg);
+        fireEvent({
+          event: 'start',
+          id: promiseId,
+          value: startArg
+        });
 
         //If the tracker was just inactive and this the first in the list of
         //promises, we reset our 'minimum duration' and 'maximum duration'
@@ -164,8 +205,17 @@ angular.module('ajoslin.promise-tracker')
             //Before resolving our promise, make sure the minDuration timeout
             //has finished.
             self.minPromise.then(function() {
-              fireEvent('done', value);
-              fireEvent(isError ? 'error' : 'success', value);
+              fireEvent({
+                event: isError ? 'error' : 'success',
+                id: promiseId,
+                value: value
+              });
+              fireEvent({
+                event: 'done', 
+                id: promiseId,
+                value: value
+              });
+
               var index = trackedPromises.indexOf(deferred);
               trackedPromises.splice(index, 1);
 
