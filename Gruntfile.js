@@ -62,6 +62,9 @@ module.exports = function (grunt) {
     },
     uglify: {
       dist: {
+        options: {
+          banner: "<%= meta.banner %>"
+        },
         files: {
           //Actually minify our ngmin'd file
           '<%= dist %>/promise-tracker.min.js': '<%= dist %>/promise-tracker.min.js'

@@ -70,9 +70,9 @@ You can catch any of these events: `'error'`, `'success'`, `'start'`, `'done'`. 
 
 ## Development
 
-* Install karma with `npm install -g karma` to run tests
-* Install dependencies, local and global, with `npm install && bower install`
-* Run `karma start` to start the test server and re-run tests on changes
+* Install karma & grunt with `npm install -g karma grunt-cli` to build & test
+* Install local dependencies with `bower install && npm install`
+* Run `grunt` to lint, test, build the code, and build the docs site
 
 ## <a id="license"></a>License
 
