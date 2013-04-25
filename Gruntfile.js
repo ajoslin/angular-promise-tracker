@@ -9,6 +9,7 @@ module.exports = function (grunt) {
   grunt.loadNpmTasks('grunt-contrib-jshint');
   grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-karma');
+  grunt.loadNpmTasks('grunt-conventional-changelog');
   grunt.loadNpmTasks('grunt-ngmin');
 
   grunt.initConfig({
@@ -118,6 +119,11 @@ module.exports = function (grunt) {
         configFile: 'test/karma-newangular.conf.js',
         singleRun: true,
         browsers: ['Chrome']
+      }
+    },
+    changelog: {
+      options: {
+        dest: 'CHANGELOG.md'
       }
     }
   });
