@@ -5,7 +5,7 @@ files = [
   JASMINE,
   JASMINE_ADAPTER,
   'components/angular-unstable/angular.js',
-  'test/lib/angular-resource.js',
+  'components/angular-resource-unstable/angular-resource.js',
   'components/angular-mocks/angular-mocks.js',
   'src/**/*.js',
   'test/unit/**/*.js'
