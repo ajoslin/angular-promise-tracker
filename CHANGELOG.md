@@ -1,3 +1,13 @@
+# 1.3.1 (2013-04-26)
+
+## Features
+### editorconfig
+
+* apply .editorconfig (ed9339d)
+
+
+
+
 # 1.3.0 (2013-04-25)
 
 ## Features
@@ -14,7 +24,7 @@
 
 **Change name of module to `ajoslin.promise-tracker`**
 
-  - Follows [AngularJS component spec](http://github.com/angular/angular-component-spec). 
+  - Follows [AngularJS component spec](http://github.com/angular/angular-component-spec).
   - To migrate, just change the name of the module included. For example: `angular.module('myApp', ['ajoslin.promise-tracker']);`
 
 **Add support for angular-resource**
