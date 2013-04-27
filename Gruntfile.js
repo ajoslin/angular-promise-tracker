@@ -15,7 +15,7 @@ module.exports = function (grunt) {
   grunt.initConfig({
     dist: '.',
     demo: 'demo',
-    pkg: grunt.file.readJSON('component.json'),
+    pkg: grunt.file.readJSON('bower.json'),
     meta: {
       banner: 
         '/*\n'+ 

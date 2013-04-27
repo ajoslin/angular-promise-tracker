@@ -4,9 +4,9 @@ basePath = '..';
 files = [
   JASMINE,
   JASMINE_ADAPTER,
-  'components/angular-unstable/angular.js',
-  'components/angular-resource-unstable/angular-resource.js',
-  'components/angular-mocks/angular-mocks.js',
+  'bower_components/angular-unstable/angular.js',
+  'bower_components/angular-resource-unstable/angular-resource.js',
+  'bower_components/angular-mocks/angular-mocks.js',
   'src/**/*.js',
   'test/unit/**/*.js'
 ];
