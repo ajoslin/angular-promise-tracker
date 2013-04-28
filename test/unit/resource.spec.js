@@ -4,8 +4,11 @@ describe('ngResource', function() {
 
   var $q, Pizza, $rootScope, $httpBackend, myTracker;
   beforeEach(inject(function(promiseTracker, _$q_, $resource, _$rootScope_, _$httpBackend_) {
+    // Returns undefined!?
+    console.log($resource);
+    
     $httpBackend = _$httpBackend_;
-    Pizza = new $resource('/hello/', {}, {
+    Pizza = $resource('/hello/', {}, {
       get: { method: "GET", isArray: false }
     });
     $rootScope = _$rootScope_;
@@ -20,6 +23,7 @@ describe('ngResource', function() {
 
   it('should add a $resource promise', function() {
     var pizza = Pizza.get();
+    expect(pizza.then).toBeDefined();
     digest();
     myTracker.addPromise(pizza);
     expect(myTracker.active()).toBe(true);
