@@ -104,12 +104,12 @@ module.exports = function (grunt) {
     },
 
     shell: {
-      commitrelease: {
+      release: {
         command: [
           'cp <%= dist %>/promise-tracker.js <%= dist %>/promise-tracker.min.js .',
           'git commit promise-tracker.js promise-tracker.min.js <%= pkgFile %> <%= changelog.options.dest %> -m "release(): v<%= pkg.version %>"',
-          'git tag v<%= pkg.version %>',
-          'git push --tags origin master'
+          'git tag v<%= pkg.version %>'//,
+          //'git push --tags origin master'
         ].join(' && ')
       }
     }
@@ -145,7 +145,7 @@ module.exports = function (grunt) {
     //Refresh config
     grunt.config('pkg', grunt.file.readJSON(grunt.config('pkgFile')));
 
-    grunt.task.run(['build', 'changelog', 'shell:release', 'release-note']);
+    grunt.task.run(['build', 'changelog', 'shell:release']);
 
   });
 };
