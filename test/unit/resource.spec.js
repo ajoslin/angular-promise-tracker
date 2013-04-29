@@ -1,6 +1,7 @@
 
 describe('ngResource', function() {
-  beforeEach(module('ajoslin.promise-tracker', 'ngResource'));
+  beforeEach(module('ajoslin.promise-tracker'));
+  beforeEach(module('ngResource'));
 
   var $q, Pizza, $rootScope, $httpBackend, myTracker;
   beforeEach(inject(function(promiseTracker, _$q_, $resource, _$rootScope_, _$httpBackend_) {
