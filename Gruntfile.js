@@ -5,15 +5,15 @@ module.exports = function (grunt) {
   grunt.loadNpmTasks('grunt-contrib-clean');
   grunt.loadNpmTasks('grunt-contrib-concat');
   grunt.loadNpmTasks('grunt-contrib-copy');
-  grunt.loadNpmTasks('grunt-contrib-watch');
   grunt.loadNpmTasks('grunt-contrib-jshint');
   grunt.loadNpmTasks('grunt-contrib-uglify');
-  grunt.loadNpmTasks('grunt-karma');
+  grunt.loadNpmTasks('grunt-contrib-watch');
   grunt.loadNpmTasks('grunt-conventional-changelog');
-  grunt.loadNpmTasks('grunt-ngmin');
+  grunt.loadNpmTasks('grunt-karma');
+  grunt.loadNpmTasks('grunt-release');
 
   grunt.initConfig({
-    dist: '.',
+    dist: 'dist',
     demo: 'demo',
     pkg: grunt.file.readJSON('component.json'),
     meta: {
@@ -24,6 +24,7 @@ module.exports = function (grunt) {
         ' * Created by <%= pkg.author %>; Licensed under <%= pkg.license %>\n' +
         ' */\n'
     },
+
     delta: {
       scripts: {
         files: ['src/**/*.js', 'test/unit/**/*.js'],
@@ -34,6 +35,7 @@ module.exports = function (grunt) {
         tasks: ['jshint']
       }
     },
+
     jshint: {
       all: ['Gruntfile.js', 'src/**/*.js'],
       options: {
@@ -43,6 +45,7 @@ module.exports = function (grunt) {
         }
       }
     },
+
     concat: {
       dist: {
         options: {
@@ -53,51 +56,25 @@ module.exports = function (grunt) {
         }
       }
     },
-    ngmin: {
-      dist: {
-        files: {
-          //Have ngmin just create a .min file, that will then be actually mind
-          '<%= dist %>/promise-tracker.min.js': '<%= dist %>/promise-tracker.js'
-        }
-      }
-    },
+
     uglify: {
       dist: {
         options: {
           banner: "<%= meta.banner %>"
         },
         files: {
-          //Actually minify our ngmin'd file
-          '<%= dist %>/promise-tracker.min.js': '<%= dist %>/promise-tracker.min.js'
+          '<%= dist %>/promise-tracker.min.js': '<%= dist %>/promise-tracker.js'
         }
       }
     },
+
     clean: ['demo/**/*'],
+
     copy: {
-      demohtml: {
-        options: {
-          //process html files with gruntfile config
-          processContent: grunt.template.process
-        },
-        files: [{
-          expand: true,
-          src: ["**/*.html"],
-          cwd: "docs/site/",
-          dest: "<%= demo %>"
-        }]
-      },
-      demoassets: {
-        files: [{
-          expand: true,
-          //Don't re-copy html files, we process those
-          src: ["**/*", "!**/*.html"],
-          cwd: "docs/site/",
-          dest: "<%= demo %>"
-        }]
-      },
-      buildfiles: {
+      release: {
         files: {
-          "<%= demo %>/promise-tracker.js": "promise-tracker.js"
+          'promise-tracker.js': '<%= dist %>/promise-tracker.js',
+          'promise-tracker.min.js': '<%= dist %>/promise-tracker.min.js'
         }
       }
     },
@@ -125,6 +102,18 @@ module.exports = function (grunt) {
       options: {
         dest: 'CHANGELOG.md'
       }
+    },
+    _release: {
+      options: {
+        bump: true,
+        file: 'component.json',
+        add: false,
+        commit: true,
+        tag: true,
+        push: false,
+        pushTags: false,
+        commitMessage: 'release(): <%= version %>'
+      }
     }
   });
 
@@ -134,27 +123,12 @@ module.exports = function (grunt) {
 
   grunt.registerTask('default', ['jshint', 'test', 'build']);
   grunt.registerTask('test', ['karma:continuousold', 'karma:continuousnew']);
-  grunt.registerTask('build', ['concat', 'ngmin', 'uglify']);
+  grunt.registerTask('build', ['concat', 'uglify']);
 
-  grunt.registerTask('docs', 'build the docs', function() {
-    var pages = ['getting-started'].map(function(pageName) {
-      var folder = 'docs/pages/' + pageName;
-      return {
-        id: pageName,
-        displayName: pageName.split('-').map(function(word) {
-          return word.charAt(0).toUpperCase() + word.substr(1);
-        }).join(" "),
-        html: grunt.file.expand(folder + "/*.html")
-          .map(grunt.file.read).join(''),
-        js: grunt.file.expand(folder + "/*.js")
-          .map(grunt.file.read).join(''),
-        md: grunt.file.expand(folder + "/*.md")
-          .map(grunt.file.read).map(markdown).join('')
-      };
-    });
-
-    grunt.config('pages', pages);
-
-    grunt.task.run(['clean', 'copy']);
+  grunt.renameTask('release', '_release');
+  grunt.registerTask('release', 'Move build files and push them', function() {
+    grunt.task.run(['default', 'copy:release', '_release']);
   });
+
+
 };

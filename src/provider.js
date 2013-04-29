@@ -37,7 +37,7 @@ angular.module('ajoslin.promise-tracker')
   }
   var trackers = {};
 
-  this.$get = function($q, $timeout) {
+  this.$get = ['$q', '$timeout', function($q, $timeout) {
     var self = this;
 
     function Tracker(options) {
@@ -221,6 +221,6 @@ angular.module('ajoslin.promise-tracker')
       }
       return trackers[trackerName];
     };
-  };
+  }];
 })
 ;

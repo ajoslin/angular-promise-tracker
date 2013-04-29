@@ -1,6 +1,6 @@
 {
   "name": "angular-promise-tracker",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "author": {
     "name": "Andy Joslin"
   },
@@ -13,10 +13,10 @@
     "grunt-contrib-uglify": "~0.2.x",
     "grunt-contrib-jshint": "~0.4.x",
     "grunt-karma": "~0.4.x",
-    "grunt-ngmin": "0.0.2",
     "node-markdown": "~0.1.1",
     "grunt-contrib-copy": "~0.4.1",
     "grunt-contrib-clean": "~0.4.1",
-    "grunt-conventional-changelog": "0.0.12"
+    "grunt-conventional-changelog": "0.0.12",
+    "grunt-release": "~0.3.3"
   }
 }
