@@ -16,7 +16,6 @@
     "node-markdown": "~0.1.1",
     "grunt-contrib-copy": "~0.4.1",
     "grunt-contrib-clean": "~0.4.1",
-    "grunt-conventional-changelog": "0.0.12",
-    "grunt-release": "~0.3.3"
+    "grunt-conventional-changelog": "git://github.com/ajoslin/grunt-conventional-changelog"
   }
 }

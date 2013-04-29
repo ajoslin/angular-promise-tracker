@@ -1,5 +1,3 @@
-var markdown = require('node-markdown').Markdown;
-
 module.exports = function (grunt) {
 
   grunt.loadNpmTasks('grunt-contrib-clean');
@@ -8,13 +6,13 @@ module.exports = function (grunt) {
   grunt.loadNpmTasks('grunt-contrib-jshint');
   grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-contrib-watch');
+  grunt.loadNpmTasks('grunt-shell');
   grunt.loadNpmTasks('grunt-conventional-changelog');
   grunt.loadNpmTasks('grunt-karma');
-  grunt.loadNpmTasks('grunt-release');
 
   grunt.initConfig({
     dist: 'dist',
-    demo: 'demo',
+    pkgFile: 'component.json',
     pkg: grunt.file.readJSON('component.json'),
     meta: {
       banner: 
@@ -59,8 +57,7 @@ module.exports = function (grunt) {
 
     uglify: {
       dist: {
-        options: {
-          banner: "<%= meta.banner %>"
+        options: { banner: "<%= meta.banner %>"
         },
         files: {
           '<%= dist %>/promise-tracker.min.js': '<%= dist %>/promise-tracker.js'
@@ -78,6 +75,7 @@ module.exports = function (grunt) {
         }
       }
     },
+
     karma: {
       watchold: {
         configFile: 'test/karma-oldangular.conf.js',
@@ -98,21 +96,21 @@ module.exports = function (grunt) {
         browsers: ['Chrome']
       }
     },
+
     changelog: {
       options: {
         dest: 'CHANGELOG.md'
       }
     },
-    _release: {
-      options: {
-        bump: true,
-        file: 'component.json',
-        add: false,
-        commit: true,
-        tag: true,
-        push: false,
-        pushTags: false,
-        commitMessage: 'release(): <%= version %>'
+
+    shell: {
+      commitrelease: {
+        command: [
+          'cp <%= dist %>/promise-tracker.js <%= dist %>/promise-tracker.min.js .',
+          'git commit promise-tracker.js promise-tracker.min.js <%= pkgFile %> <%= changelog.options.dest %> -m "release(): v<%= pkg.version %>"',
+          'git tag v<%= pkg.version %>',
+          'git push --tags origin master'
+        ].join(' && ')
       }
     }
   });
@@ -125,10 +123,29 @@ module.exports = function (grunt) {
   grunt.registerTask('test', ['karma:continuousold', 'karma:continuousnew']);
   grunt.registerTask('build', ['concat', 'uglify']);
 
-  grunt.renameTask('release', '_release');
-  grunt.registerTask('release', 'Move build files and push them', function() {
-    grunt.task.run(['default', 'copy:release', '_release']);
+  grunt.registerTask('release', 'Bump version, add tag, commit & push new build files', function() {
+    var VERSION_REGEX = /([\'|\"]version[\'|\"][ ]*:[ ]*[\'|\"])([\d|.]*)([\'|\"])/i;
+    var RELEASE_TYPES = {"minor":1, "major":1, "patch":1};
+
+    var semver = require('semver');
+    var releaseType = this.args[0];
+
+    if (!(releaseType in RELEASE_TYPES) ) {
+      grunt.fail.fatal("Release type not specified! Please specify one of the " +
+                  "following: " + Object.keys(RELEASE_TYPES).join(', '));
+    }
+
+    var pkg = grunt.file.read(grunt.config('pkgFile'));
+    var version;
+    pkg = pkg.replace(VERSION_REGEX, function (match, left, center, right) {
+      version = semver.inc(center, releaseType);
+      return left + version + right;
+    });
+    grunt.file.write(grunt.config('pkgFile'), pkg);
+    //Refresh config
+    grunt.config('pkg', grunt.file.readJSON(grunt.config('pkgFile')));
+
+    grunt.task.run(['build', 'changelog', 'shell:release', 'release-note']);
+
   });
-
-
 };
