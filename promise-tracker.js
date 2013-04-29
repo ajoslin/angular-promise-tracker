@@ -1,20 +1,9 @@
 /*
- * promise-tracker - v1.3.0 - 2013-04-25
+ * promise-tracker - v1.3.3 - 2013-04-29
  * http://github.com/ajoslin/angular-promise-tracker
  * Created by Andy Joslin; Licensed under Public Domain
  */
-angular.module('ajoslin.promise-tracker', [])
-
-.config(function($httpProvider) {
-  if ($httpProvider.interceptors) {
-    //Support angularJS 1.1.4: interceptors
-    $httpProvider.interceptors.push('trackerHttpInterceptor');
-  } else {
-    //Support angularJS pre 1.1.4: responseInterceptors
-    $httpProvider.responseInterceptors.push('trackerResponseInterceptor');
-  }
-})
-;
+angular.module('ajoslin.promise-tracker', []);
 
 
 angular.module('ajoslin.promise-tracker')
@@ -25,7 +14,8 @@ angular.module('ajoslin.promise-tracker')
  */
 
 //angular versions before 1.1.4 use responseInterceptor format
-.factory('trackerResponseInterceptor', function($q, promiseTracker, $injector) {
+.factory('trackerResponseInterceptor', ['$q', 'promiseTracker', '$injector', 
+function($q, promiseTracker, $injector) {
   //We use $injector get around circular dependency problem for $http
   var $http;
   return function spinnerResponseInterceptor(promise) {
@@ -37,9 +27,10 @@ angular.module('ajoslin.promise-tracker')
     }
     return promise;
   };
-})
+}])
 
-.factory('trackerHttpInterceptor', function($q, promiseTracker, $injector) {
+.factory('trackerHttpInterceptor', ['$q', 'promiseTracker', '$injector', 
+function($q, promiseTracker, $injector) {
   return {
     request: function(config) {
       if (config.tracker) {
@@ -61,7 +52,17 @@ angular.module('ajoslin.promise-tracker')
       return $q.reject(response);
     }
   };
-})
+}])
+
+.config(['$httpProvider', function($httpProvider) {
+  if ($httpProvider.interceptors) {
+    //Support angularJS 1.1.4: interceptors
+    $httpProvider.interceptors.push('trackerHttpInterceptor');
+  } else {
+    //Support angularJS pre 1.1.4: responseInterceptors
+    $httpProvider.responseInterceptors.push('trackerResponseInterceptor');
+  }
+}])
 
 ;
 
@@ -104,7 +105,7 @@ angular.module('ajoslin.promise-tracker')
   }
   var trackers = {};
 
-  this.$get = function($q, $timeout) {
+  this.$get = ['$q', '$timeout', function($q, $timeout) {
     var self = this;
 
     function Tracker(options) {
@@ -288,6 +289,6 @@ angular.module('ajoslin.promise-tracker')
       }
       return trackers[trackerName];
     };
-  };
+  }];
 })
 ;

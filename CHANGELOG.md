@@ -1,3 +1,45 @@
+# 1.3.3 (2013-04-29)
+
+## Features
+### conventional-changelog
+
+* Introduce grunt-conventional-changelog (f8b7d23b)
+
+### editorconfig
+
+* apply .editorconfig (ed9339dd)
+
+
+
+## Bug fixes
+### promise-tracker
+
+* Fix error with minified files (f8ee34e8)
+
+
+
+
+# 1.3.2 (2013-04-29)
+
+## Features
+### conventional-changelog
+
+* Introduce grunt-conventional-changelog (f8b7d23b)
+
+### editorconfig
+
+* apply .editorconfig (ed9339dd)
+
+
+
+## Bug fixes
+### promise-tracker
+
+* Fix error with minified files (f8ee34e8)
+
+
+
+
 # 1.3.1 (2013-04-26)
 
 ## Features
