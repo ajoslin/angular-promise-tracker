@@ -19,54 +19,10 @@ Instead, you want different indicators while different types of request are load
 
 Well, [sigh no more](http://www.youtube.com/watch?v=eltHv58l8ig) my dear friend, your troubles are over.
 
+## Ok, sounds jolly good! How do I get started?
 
-* Throw a promiseTracker onto your scope
+Check out [the wiki](https://github.com/ajoslin/angular-promise-tracker/wiki#wiki-intro)!
 
-  ```js
-  function MyCtrl($scope, promiseTracker) {
-      $scope.pizzaTracker = promiseTracker('pizza');
-  }
-  ```
-
-* Do some requests, and in their config add in a little option called `tracker`
-
-  ```js
-  $http.get('/pizzaFlavor', { tracker: 'pizza' });
-  $http.get('/pizzaType', { tracker: 'pizza' });
-  $http.get('/pizzaCrust', { tracker: 'pizza' });
-  ```
-
-* Now the awesomes happen: `pizzaTracker.active()` will be true whenever any request with `tracker: 'pizza'` is waiting for response!
- 
-
-  ```html
-  <div ng-show="pizzaTracker.active()" style="background: pink;">
-      Loading some pizza data for ya, sir! ...
-  </div>
-  ```
-
-* But wait, there's more! You can also catch cool events when stuff happens on any pizza promise...
-
-  ```js
-  $scope.pizzaTracker.on('error', function(response) {
-      $scope.pizzaError = "Uh oh, some sort of pizza error happened! " + response.data;
-  });
-  $http.get('/pizzaError', { tracker: 'pizza' });
-  ```
-  ```html
-  <b ng-show="pizzaError" style="color:red;">!! {{pizzaError}} !!</b>
-  ```
-
-You can catch any of these events: `'error'`, `'success'`, `'start'`, `'done'`.  Hopefully they all make sense.
-
-*  Oh, and did I mention... you can attach any old promise to your pizza tracker.  Not just http requests!
-
-  ```js
-  var myPizzaPromise = $q.defer();
-  $scope.pizzaTracker.addPromise(myPizzaPromise.promise);
-  ```
-
--
 
 ## Development
 
