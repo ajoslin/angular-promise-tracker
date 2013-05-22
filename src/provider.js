@@ -4,7 +4,7 @@ angular.module('ajoslin.promise-tracker')
 .provider('promiseTracker', function() {
 
   /**
-   * uid(), from angularjs source
+   * nextUid(), from angularjs source
    *
    * A consistent way of creating unique IDs in angular. The ID is a sequence of alpha numeric
    * characters such as '012ABC'. The reason why we are not using simply a number counter is that
@@ -41,17 +41,17 @@ angular.module('ajoslin.promise-tracker')
     var self = this;
 
     function Tracker(options) {
+      var self = this;
+      //Define our callback types.  The user can catch when a promise starts,
+      //has an error, is successful, or just is done with error or success.
+      var callbacks = {
+        start: [], //Start is called when a new promise is added
+        done: [], //Called when a promise is finished (error or success)
+        error: [], //Called on error.
+        success: [] //Called on success.
+      };
+      var trackedPromises = [];
       options = options || {};
-      var self = this,
-        //Define our callback types.  The user can catch when a promise starts,
-        //has an error, is successful, or just is done with error or success.
-        callbacks = {
-          start: [], //Start is called when a new promise is added
-          done: [], //Called when a promise is resolved (error or success)
-          error: [], //Called on error.
-          success: [] //Called on success.
-        },
-        trackedPromises = [];
 
       //Allow an optional "minimum duration" that the tracker has to stay
       //active for. For example, if minimum duration is 1000ms and the user 
@@ -169,11 +169,16 @@ angular.module('ajoslin.promise-tracker')
       //## addPromise()
       //Adds a given promise to our tracking
       self.addPromise = function(promise, startArg) {
+        var then = promise && (promise.$then || promise.then);
+        if (!then) {
+          throw new Error("promiseTracker#addPromise expects a promise object!");
+        }
+
         var deferred = createPromise(startArg);
 
         //When given promise is done, resolve our created promise
         //Allow $then for angular-resource objects
-        (promise.$then || promise.then)(function success(value) {
+        then(function success(value) {
           deferred.resolve(value);
           return value;
         }, function error(value) {
@@ -192,24 +197,28 @@ angular.module('ajoslin.promise-tracker')
       };
 
       //## on(), bind()
+      //ALlow user to bind to start, done, error, or success events for tracked
+      //promises.
       self.on = self.bind = function(event, cb) {
         if (!callbacks[event]) {
-          throw "Cannot create callback for event '" + event + 
-          "'. Allowed types: 'start', 'done', 'error', 'success'";
+          throw new Error("Cannot bind callback for event '" + event + 
+          "'. Allowed types: 'start', 'done', 'error', 'success'");
         }
         callbacks[event].push(cb);
         return self;
       };
+      //Allow user to unbind any event. If a callback is given, it will unbind
+      //that callback.  Else, it will unbind all the callbacks for that event.
+      //Similar to jQuery.
       self.off = self.unbind = function(event, cb) {
         if (!callbacks[event]) {
-          throw "Cannot create callback for event '" + event + 
-          "'. Allowed types: 'start', 'done', 'error', 'success'";
+          throw new Error("Cannot unbind callback for event '" + event + 
+          "'. Allowed types: 'start', 'done', 'error', 'success'");
         }
         if (cb) {
           var index = callbacks[event].indexOf(cb);
           callbacks[event].splice(index, 1);
         } else {
-          //Erase all events of this type if no cb specified to remvoe
           callbacks[event].length = 0;
         }
         return self;

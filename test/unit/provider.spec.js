@@ -39,6 +39,14 @@ describe('provider', function() {
     expect(typeof myTracker.addPromise($q.defer().promise)).toBe('object');
   });
 
+  it('should throw an error if we add a non-object', function() {
+    expect(function() { myTracker.addPromise(null); }).toThrow();
+  });
+
+  it('should throw an error if we add a non-promise', function() {
+    expect(function() { myTracker.addPromise({}); }).toThrow();
+  });
+
   it('should allow you to add callbacks of the right type', function() {
     myTracker.on('start', angular.noop);
     myTracker.on('success', angular.noop);
