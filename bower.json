@@ -18,7 +18,7 @@
     "lib",
     "*.spec.js"
   ],
-  "dependencies": {
+  "devDependencies": {
     "angular": "1.0.6",
     "angular-mocks": "1.0.6",
     "angular-unstable": "1.1.4"
