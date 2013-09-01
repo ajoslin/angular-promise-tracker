@@ -2,6 +2,6 @@
 npm-debug.log
 .DS_Store
 demo
-components
+bower_components
 node_modules
 dist
