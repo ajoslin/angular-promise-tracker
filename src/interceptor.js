@@ -7,40 +7,59 @@ angular.module('ajoslin.promise-tracker')
  */
 
 //angular versions before 1.1.4 use responseInterceptor format
-.factory('trackerResponseInterceptor', ['$q', 'promiseTracker', '$injector', 
+.factory('trackerResponseInterceptor', ['$q', 'promiseTracker', '$injector',
 function($q, promiseTracker, $injector) {
   //We use $injector get around circular dependency problem for $http
   var $http;
-  return function spinnerResponseInterceptor(promise) {
+  return function trackerResponse(promise) {
     if (!$http) $http = $injector.get('$http'); //lazy-load http
+
     //We know the latest request is always going to be last in the list
     var config = $http.pendingRequests[$http.pendingRequests.length-1];
+
     if (config.tracker) {
-      promiseTracker(config.tracker).addPromise(promise, config);
+      if (!angular.isArray(config.tracker)) {
+        config.tracker = [config.tracker];
+      }
+      angular.forEach(config.tracker, function(trackerName) {
+        promiseTracker(trackerName).addPromise(promise, config);
+      });
     }
+
     return promise;
   };
 }])
 
-.factory('trackerHttpInterceptor', ['$q', 'promiseTracker', '$injector', 
-function($q, promiseTracker, $injector) {
+.factory('trackerHttpInterceptor', ['$q', 'promiseTracker',
+function($q, promiseTracker) {
   return {
     request: function(config) {
       if (config.tracker) {
-        var deferred = promiseTracker(config.tracker).createPromise(config);
-        config.$promiseTrackerDeferred = deferred;
+        if (!angular.isArray(config.tracker)) {
+          config.tracker = [config.tracker];
+        }
+        config.$promiseTrackerDeferred = config.$promiseTrackerDeferred || [];
+
+        angular.forEach(config.tracker, function(trackerName) {
+          var deferred = promiseTracker(trackerName).createPromise(config);
+          config.$promiseTrackerDeferred.push(deferred);
+        });
       }
       return $q.when(config);
     },
     response: function(response) {
       if (response.config.$promiseTrackerDeferred) {
-        response.config.$promiseTrackerDeferred.resolve(response);
+        angular.forEach(response.config.$promiseTrackerDeferred, function(deferred) {
+          deferred.resolve(response);
+        });
       }
       return $q.when(response);
     },
     responseError: function(response) {
       if (response.config.$promiseTrackerDeferred) {
-        response.config.$promiseTrackerDeferred.reject(response);
+        angular.forEach(response.config.$promiseTrackerDeferred, function(deferred) {
+          deferred.reject(response);
+        });
       }
       return $q.reject(response);
     }

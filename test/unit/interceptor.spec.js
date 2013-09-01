@@ -47,6 +47,24 @@ describe('interceptor', function() {
     expect(promiseTracker('jonny').active()).toBe(false);
   });
 
+  it('should allow an array of tracker in the options', function() {
+    $http.get('/pie', { tracker: ['andy'] });
+    digest();
+    expect(promiseTracker('andy').active()).toBe(true);
+    $httpBackend.flush();
+    expect(promiseTracker('andy').active()).toBe(false);
+  });
+
+  it('should allow multiple trackers in the options', function() {
+    $http.get('/pizza', { tracker: ['jonny', 'joe'] });
+    digest();
+    expect(promiseTracker('jonny').active()).toBe(true);
+    expect(promiseTracker('joe').active()).toBe(true);
+    $httpBackend.flush();
+    expect(promiseTracker('jonny').active()).toBe(false);
+    expect(promiseTracker('joe').active()).toBe(false);
+  });
+
   describe('binding events', function() {
     var spies;
     beforeEach(function() {
