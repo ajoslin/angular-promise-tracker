@@ -48,7 +48,7 @@ function($q, promiseTracker) {
       return $q.when(config);
     },
     response: function(response) {
-      if (response.config.$promiseTrackerDeferred) {
+      if (response.config && response.config.$promiseTrackerDeferred) {
         angular.forEach(response.config.$promiseTrackerDeferred, function(deferred) {
           deferred.resolve(response);
         });
@@ -56,7 +56,7 @@ function($q, promiseTracker) {
       return $q.when(response);
     },
     responseError: function(response) {
-      if (response.config.$promiseTrackerDeferred) {
+      if (response.config && response.config.$promiseTrackerDeferred) {
         angular.forEach(response.config.$promiseTrackerDeferred, function(deferred) {
           deferred.reject(response);
         });
