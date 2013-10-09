@@ -1,5 +1,5 @@
 /*
- * promise-tracker - v1.3.3 - 2013-04-29
+ * promise-tracker - v1.4.0 - 2013-10-09
  * http://github.com/ajoslin/angular-promise-tracker
  * Created by Andy Joslin; Licensed under Public Domain
  */
@@ -14,40 +14,59 @@ angular.module('ajoslin.promise-tracker')
  */
 
 //angular versions before 1.1.4 use responseInterceptor format
-.factory('trackerResponseInterceptor', ['$q', 'promiseTracker', '$injector', 
+.factory('trackerResponseInterceptor', ['$q', 'promiseTracker', '$injector',
 function($q, promiseTracker, $injector) {
   //We use $injector get around circular dependency problem for $http
   var $http;
-  return function spinnerResponseInterceptor(promise) {
+  return function trackerResponse(promise) {
     if (!$http) $http = $injector.get('$http'); //lazy-load http
+
     //We know the latest request is always going to be last in the list
     var config = $http.pendingRequests[$http.pendingRequests.length-1];
+
     if (config.tracker) {
-      promiseTracker(config.tracker).addPromise(promise, config);
+      if (!angular.isArray(config.tracker)) {
+        config.tracker = [config.tracker];
+      }
+      angular.forEach(config.tracker, function(trackerName) {
+        promiseTracker(trackerName).addPromise(promise, config);
+      });
     }
+
     return promise;
   };
 }])
 
-.factory('trackerHttpInterceptor', ['$q', 'promiseTracker', '$injector', 
-function($q, promiseTracker, $injector) {
+.factory('trackerHttpInterceptor', ['$q', 'promiseTracker',
+function($q, promiseTracker) {
   return {
     request: function(config) {
       if (config.tracker) {
-        var deferred = promiseTracker(config.tracker).createPromise(config);
-        config.$promiseTrackerDeferred = deferred;
+        if (!angular.isArray(config.tracker)) {
+          config.tracker = [config.tracker];
+        }
+        config.$promiseTrackerDeferred = config.$promiseTrackerDeferred || [];
+
+        angular.forEach(config.tracker, function(trackerName) {
+          var deferred = promiseTracker(trackerName).createPromise(config);
+          config.$promiseTrackerDeferred.push(deferred);
+        });
       }
       return $q.when(config);
     },
     response: function(response) {
       if (response.config.$promiseTrackerDeferred) {
-        response.config.$promiseTrackerDeferred.resolve(response);
+        angular.forEach(response.config.$promiseTrackerDeferred, function(deferred) {
+          deferred.resolve(response);
+        });
       }
       return $q.when(response);
     },
     responseError: function(response) {
       if (response.config.$promiseTrackerDeferred) {
-        response.config.$promiseTrackerDeferred.reject(response);
+        angular.forEach(response.config.$promiseTrackerDeferred, function(deferred) {
+          deferred.reject(response);
+        });
       }
       return $q.reject(response);
     }
@@ -72,7 +91,7 @@ angular.module('ajoslin.promise-tracker')
 .provider('promiseTracker', function() {
 
   /**
-   * uid(), from angularjs source
+   * nextUid(), from angularjs source
    *
    * A consistent way of creating unique IDs in angular. The ID is a sequence of alpha numeric
    * characters such as '012ABC'. The reason why we are not using simply a number counter is that
@@ -109,21 +128,21 @@ angular.module('ajoslin.promise-tracker')
     var self = this;
 
     function Tracker(options) {
+      var self = this;
+      //Define our callback types.  The user can catch when a promise starts,
+      //has an error, is successful, or just is done with error or success.
+      var callbacks = {
+        start: [], //Start is called when a new promise is added
+        done: [], //Called when a promise is finished (error or success)
+        error: [], //Called on error.
+        success: [] //Called on success.
+      };
+      var trackedPromises = [];
       options = options || {};
-      var self = this,
-        //Define our callback types.  The user can catch when a promise starts,
-        //has an error, is successful, or just is done with error or success.
-        callbacks = {
-          start: [], //Start is called when a new promise is added
-          done: [], //Called when a promise is resolved (error or success)
-          error: [], //Called on error.
-          success: [] //Called on success.
-        },
-        trackedPromises = [];
 
       //Allow an optional "minimum duration" that the tracker has to stay
-      //active for. For example, if minimum duration is 1000ms and the user 
-      //adds three promises that all resolve after 650ms, the tracker will 
+      //active for. For example, if minimum duration is 1000ms and the user
+      //adds three promises that all resolve after 650ms, the tracker will
       //still count itself as active until 1000ms have passed.
       self.setMinDuration = function(minimum) {
         self._minDuration = minimum;
@@ -131,7 +150,7 @@ angular.module('ajoslin.promise-tracker')
       self.setMinDuration(options.minDuration);
 
       //Allow an option "maximum duration" that the tracker can stay active.
-      //Ideally, the user would resolve his promises after a certain time to 
+      //Ideally, the user would resolve his promises after a certain time to
       //achieve this 'maximum duration' option, but there are a few cases
       //where it is necessary anyway.
       self.setMaxDuration = function(maximum) {
@@ -140,7 +159,7 @@ angular.module('ajoslin.promise-tracker')
       self.setMaxDuration(options.maxDuration);
 
       //## active()
-      //Returns whether the promiseTracker is active - detect if we're 
+      //Returns whether the promiseTracker is active - detect if we're
       //currently tracking any promises.
       self.active = function() {
         return trackedPromises.length > 0;
@@ -168,9 +187,9 @@ angular.module('ajoslin.promise-tracker')
       //@return deferred - our deferred object that is being tracked
       function createPromise(startArg) {
         //We create our own promise to track. This usually piggybacks on a given
-        //promise, or we give it back and someone else can resolve it (like 
+        //promise, or we give it back and someone else can resolve it (like
         //with the httpResponseInterceptor).
-        //Using our own promise also lets us do things like cancel early or add 
+        //Using our own promise also lets us do things like cancel early or add
         //a minimum duration.
         var deferred = $q.defer();
         var promiseId = nextUid();
@@ -199,24 +218,13 @@ angular.module('ajoslin.promise-tracker')
         }
 
         //Create a callback for when this promise is done. It will remove our
-        //tracked promise from the array and call the appropriate event 
+        //tracked promise from the array and call the appropriate event
         //callbacks depending on whether there was an error or not.
         function onDone(isError) {
           return function(value) {
             //Before resolving our promise, make sure the minDuration timeout
             //has finished.
             self.minPromise.then(function() {
-              fireEvent({
-                event: isError ? 'error' : 'success',
-                id: promiseId,
-                value: value
-              });
-              fireEvent({
-                event: 'done', 
-                id: promiseId,
-                value: value
-              });
-
               var index = trackedPromises.indexOf(deferred);
               trackedPromises.splice(index, 1);
 
@@ -225,6 +233,17 @@ angular.module('ajoslin.promise-tracker')
               if (trackedPromises.length === 0 && self.maxPromise) {
                 $timeout.cancel(self.maxPromise);
               }
+
+              fireEvent({
+                event: isError ? 'error' : 'success',
+                id: promiseId,
+                value: value
+              });
+              fireEvent({
+                event: 'done',
+                id: promiseId,
+                value: value
+              });
             });
           };
         }
@@ -237,11 +256,16 @@ angular.module('ajoslin.promise-tracker')
       //## addPromise()
       //Adds a given promise to our tracking
       self.addPromise = function(promise, startArg) {
+        var then = promise && (promise.$then || promise.then);
+        if (!then) {
+          throw new Error("promiseTracker#addPromise expects a promise object!");
+        }
+
         var deferred = createPromise(startArg);
 
         //When given promise is done, resolve our created promise
         //Allow $then for angular-resource objects
-        (promise.$then || promise.then)(function success(value) {
+        then(function success(value) {
           deferred.resolve(value);
           return value;
         }, function error(value) {
@@ -260,24 +284,28 @@ angular.module('ajoslin.promise-tracker')
       };
 
       //## on(), bind()
+      //ALlow user to bind to start, done, error, or success events for tracked
+      //promises.
       self.on = self.bind = function(event, cb) {
         if (!callbacks[event]) {
-          throw "Cannot create callback for event '" + event + 
-          "'. Allowed types: 'start', 'done', 'error', 'success'";
+          throw new Error("Cannot bind callback for event '" + event +
+          "'. Allowed types: 'start', 'done', 'error', 'success'");
         }
         callbacks[event].push(cb);
         return self;
       };
+      //Allow user to unbind any event. If a callback is given, it will unbind
+      //that callback.  Else, it will unbind all the callbacks for that event.
+      //Similar to jQuery.
       self.off = self.unbind = function(event, cb) {
         if (!callbacks[event]) {
-          throw "Cannot create callback for event '" + event + 
-          "'. Allowed types: 'start', 'done', 'error', 'success'";
+          throw new Error("Cannot unbind callback for event '" + event +
+          "'. Allowed types: 'start', 'done', 'error', 'success'");
         }
         if (cb) {
           var index = callbacks[event].indexOf(cb);
           callbacks[event].splice(index, 1);
         } else {
-          //Erase all events of this type if no cb specified to remvoe
           callbacks[event].length = 0;
         }
         return self;

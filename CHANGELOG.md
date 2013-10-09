@@ -1,3 +1,15 @@
+# 1.4.0 (2013-10-09)
+
+## Features
+### interceptor
+
+* allow array of tracker names in http tracker option ([66d41cdd](http://github.com/ajoslin/angular-promise-tracker/commits/66d41cdd))
+
+
+
+
+
+
 # 1.3.3 (2013-04-29)
 
 ## Bug fixes
