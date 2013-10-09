@@ -54,8 +54,8 @@ angular.module('ajoslin.promise-tracker')
       options = options || {};
 
       //Allow an optional "minimum duration" that the tracker has to stay
-      //active for. For example, if minimum duration is 1000ms and the user 
-      //adds three promises that all resolve after 650ms, the tracker will 
+      //active for. For example, if minimum duration is 1000ms and the user
+      //adds three promises that all resolve after 650ms, the tracker will
       //still count itself as active until 1000ms have passed.
       self.setMinDuration = function(minimum) {
         self._minDuration = minimum;
@@ -63,7 +63,7 @@ angular.module('ajoslin.promise-tracker')
       self.setMinDuration(options.minDuration);
 
       //Allow an option "maximum duration" that the tracker can stay active.
-      //Ideally, the user would resolve his promises after a certain time to 
+      //Ideally, the user would resolve his promises after a certain time to
       //achieve this 'maximum duration' option, but there are a few cases
       //where it is necessary anyway.
       self.setMaxDuration = function(maximum) {
@@ -72,7 +72,7 @@ angular.module('ajoslin.promise-tracker')
       self.setMaxDuration(options.maxDuration);
 
       //## active()
-      //Returns whether the promiseTracker is active - detect if we're 
+      //Returns whether the promiseTracker is active - detect if we're
       //currently tracking any promises.
       self.active = function() {
         return trackedPromises.length > 0;
@@ -100,9 +100,9 @@ angular.module('ajoslin.promise-tracker')
       //@return deferred - our deferred object that is being tracked
       function createPromise(startArg) {
         //We create our own promise to track. This usually piggybacks on a given
-        //promise, or we give it back and someone else can resolve it (like 
+        //promise, or we give it back and someone else can resolve it (like
         //with the httpResponseInterceptor).
-        //Using our own promise also lets us do things like cancel early or add 
+        //Using our own promise also lets us do things like cancel early or add
         //a minimum duration.
         var deferred = $q.defer();
         var promiseId = nextUid();
@@ -131,24 +131,13 @@ angular.module('ajoslin.promise-tracker')
         }
 
         //Create a callback for when this promise is done. It will remove our
-        //tracked promise from the array and call the appropriate event 
+        //tracked promise from the array and call the appropriate event
         //callbacks depending on whether there was an error or not.
         function onDone(isError) {
           return function(value) {
             //Before resolving our promise, make sure the minDuration timeout
             //has finished.
             self.minPromise.then(function() {
-              fireEvent({
-                event: isError ? 'error' : 'success',
-                id: promiseId,
-                value: value
-              });
-              fireEvent({
-                event: 'done', 
-                id: promiseId,
-                value: value
-              });
-
               var index = trackedPromises.indexOf(deferred);
               trackedPromises.splice(index, 1);
 
@@ -157,6 +146,17 @@ angular.module('ajoslin.promise-tracker')
               if (trackedPromises.length === 0 && self.maxPromise) {
                 $timeout.cancel(self.maxPromise);
               }
+
+              fireEvent({
+                event: isError ? 'error' : 'success',
+                id: promiseId,
+                value: value
+              });
+              fireEvent({
+                event: 'done',
+                id: promiseId,
+                value: value
+              });
             });
           };
         }
@@ -201,7 +201,7 @@ angular.module('ajoslin.promise-tracker')
       //promises.
       self.on = self.bind = function(event, cb) {
         if (!callbacks[event]) {
-          throw new Error("Cannot bind callback for event '" + event + 
+          throw new Error("Cannot bind callback for event '" + event +
           "'. Allowed types: 'start', 'done', 'error', 'success'");
         }
         callbacks[event].push(cb);
@@ -212,7 +212,7 @@ angular.module('ajoslin.promise-tracker')
       //Similar to jQuery.
       self.off = self.unbind = function(event, cb) {
         if (!callbacks[event]) {
-          throw new Error("Cannot unbind callback for event '" + event + 
+          throw new Error("Cannot unbind callback for event '" + event +
           "'. Allowed types: 'start', 'done', 'error', 'success'");
         }
         if (cb) {
