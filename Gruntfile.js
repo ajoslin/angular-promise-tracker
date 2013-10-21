@@ -15,12 +15,14 @@ module.exports = function (grunt) {
     pkgFile: 'bower.json',
     pkg: grunt.file.readJSON('bower.json'),
     meta: {
-      banner: 
-        '/*\n'+ 
+      banner:
+        '/*\n'+
         ' * <%= pkg.name %> - v<%= pkg.version %> - <%= grunt.template.today("yyyy-mm-dd") %>\n' +
         ' * <%= pkg.homepage %>\n' +
         ' * Created by <%= pkg.author %>; Licensed under <%= pkg.license %>\n' +
-        ' */\n'
+        ' */\n' +
+        '\n(function() {\n +',
+      footer: '\n +}());'
     },
 
     delta: {
@@ -47,7 +49,8 @@ module.exports = function (grunt) {
     concat: {
       dist: {
         options: {
-          banner: "<%= meta.banner %>"
+          banner: '<%= meta.banner %>',
+          footer: '<%= meta.footer %>'
         },
         files: {
           '<%= dist %>/promise-tracker.js': ['src/**/*.js']

@@ -108,11 +108,6 @@ angular.module('ajoslin.promise-tracker')
         var promiseId = nextUid();
 
         trackedPromises.push(deferred);
-        fireEvent({
-          event: 'start',
-          id: promiseId,
-          value: startArg
-        });
 
         //If the tracker was just inactive and this the first in the list of
         //promises, we reset our 'minimum duration' and 'maximum duration'
@@ -129,6 +124,14 @@ angular.module('ajoslin.promise-tracker')
             self.maxPromise = $timeout(deferred.resolve, self._maxDuration);
           }
         }
+
+        fireEvent({
+          event: 'start',
+          id: promiseId,
+          value: startArg
+        });
+
+        deferred.promise.then(onDone(false), onDone(true));
 
         //Create a callback for when this promise is done. It will remove our
         //tracked promise from the array and call the appropriate event
@@ -160,8 +163,6 @@ angular.module('ajoslin.promise-tracker')
             });
           };
         }
-
-        deferred.promise.then(onDone(false), onDone(true));
 
         return deferred;
       }
