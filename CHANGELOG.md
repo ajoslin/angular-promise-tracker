@@ -1,3 +1,15 @@
+# 1.4.1 (2013-10-21)
+
+
+
+## Bug fixes
+### interceptor
+
+* fix error in ie8 ([92d72f2c](http://github.com/ajoslin/angular-promise-tracker/commits/92d72f2c))
+
+
+
+
 # 1.4.0 (2013-10-09)
 
 ## Features

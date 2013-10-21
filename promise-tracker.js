@@ -1,25 +1,37 @@
 /*
- * promise-tracker - v1.4.0 - 2013-10-09
+ * promise-tracker - v1.4.1 - 2013-10-21
  * http://github.com/ajoslin/angular-promise-tracker
  * Created by Andy Joslin; Licensed under Public Domain
  */
-angular.module('ajoslin.promise-tracker', []);
+
+(function() {
+ +angular.module('ajoslin.promise-tracker', []);
 
 
 angular.module('ajoslin.promise-tracker')
+.config(['$httpProvider', function($httpProvider) {
+  if ($httpProvider.interceptors) {
+    //Support angularJS 1.1+: interceptors
+    $httpProvider.interceptors.push(TrackerHttpInterceptor);
+  } else {
+    //Support angularJS pre 1.0.x: responseInterceptors
+    $httpProvider.responseInterceptors.push(TrackerResponseInterceptor);
+  }
+}]);
 
 /*
  * Intercept all http requests that have a `tracker` option in their config,
  * and add that http promise to the specified `tracker`
  */
 
-//angular versions before 1.1.4 use responseInterceptor format
-.factory('trackerResponseInterceptor', ['$q', 'promiseTracker', '$injector',
-function($q, promiseTracker, $injector) {
+//angular-1.1.4+ format
+function TrackerResponseInterceptor($q, promiseTracker, $injector) {
   //We use $injector get around circular dependency problem for $http
   var $http;
   return function trackerResponse(promise) {
-    if (!$http) $http = $injector.get('$http'); //lazy-load http
+    if (!$http) {
+      $http = $injector.get('$http'); //lazy-load http
+    }
 
     //We know the latest request is always going to be last in the list
     var config = $http.pendingRequests[$http.pendingRequests.length-1];
@@ -35,10 +47,11 @@ function($q, promiseTracker, $injector) {
 
     return promise;
   };
-}])
+}
+TrackerResponseInterceptor.$inject = ['$q', 'promiseTracker', '$injector'];
 
-.factory('trackerHttpInterceptor', ['$q', 'promiseTracker',
-function($q, promiseTracker) {
+//angular-1.0.x format
+function TrackerHttpInterceptor($q, promiseTracker) {
   return {
     request: function(config) {
       if (config.tracker) {
@@ -55,7 +68,7 @@ function($q, promiseTracker) {
       return $q.when(config);
     },
     response: function(response) {
-      if (response.config.$promiseTrackerDeferred) {
+      if (response.config && response.config.$promiseTrackerDeferred) {
         angular.forEach(response.config.$promiseTrackerDeferred, function(deferred) {
           deferred.resolve(response);
         });
@@ -63,7 +76,7 @@ function($q, promiseTracker) {
       return $q.when(response);
     },
     responseError: function(response) {
-      if (response.config.$promiseTrackerDeferred) {
+      if (response.config && response.config.$promiseTrackerDeferred) {
         angular.forEach(response.config.$promiseTrackerDeferred, function(deferred) {
           deferred.reject(response);
         });
@@ -71,19 +84,9 @@ function($q, promiseTracker) {
       return $q.reject(response);
     }
   };
-}])
+}
+TrackerHttpInterceptor.$inject = ['$q', 'promiseTracker'];
 
-.config(['$httpProvider', function($httpProvider) {
-  if ($httpProvider.interceptors) {
-    //Support angularJS 1.1.4: interceptors
-    $httpProvider.interceptors.push('trackerHttpInterceptor');
-  } else {
-    //Support angularJS pre 1.1.4: responseInterceptors
-    $httpProvider.responseInterceptors.push('trackerResponseInterceptor');
-  }
-}])
-
-;
 
 
 angular.module('ajoslin.promise-tracker')
@@ -195,11 +198,6 @@ angular.module('ajoslin.promise-tracker')
         var promiseId = nextUid();
 
         trackedPromises.push(deferred);
-        fireEvent({
-          event: 'start',
-          id: promiseId,
-          value: startArg
-        });
 
         //If the tracker was just inactive and this the first in the list of
         //promises, we reset our 'minimum duration' and 'maximum duration'
@@ -216,6 +214,14 @@ angular.module('ajoslin.promise-tracker')
             self.maxPromise = $timeout(deferred.resolve, self._maxDuration);
           }
         }
+
+        fireEvent({
+          event: 'start',
+          id: promiseId,
+          value: startArg
+        });
+
+        deferred.promise.then(onDone(false), onDone(true));
 
         //Create a callback for when this promise is done. It will remove our
         //tracked promise from the array and call the appropriate event
@@ -247,8 +253,6 @@ angular.module('ajoslin.promise-tracker')
             });
           };
         }
-
-        deferred.promise.then(onDone(false), onDone(true));
 
         return deferred;
       }
@@ -320,3 +324,5 @@ angular.module('ajoslin.promise-tracker')
   }];
 })
 ;
+
+ +}());
