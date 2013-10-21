@@ -60,10 +60,12 @@ module.exports = function (grunt) {
 
     uglify: {
       dist: {
-        options: { banner: "<%= meta.banner %>"
+        options: {
+          banner: "<%= meta.banner %>",
+          footer: '<%= meta.footer %>'
         },
         files: {
-          '<%= dist %>/promise-tracker.min.js': '<%= dist %>/promise-tracker.js'
+          '<%= dist %>/promise-tracker.min.js': ['src/**/*.js']
         }
       }
     },
