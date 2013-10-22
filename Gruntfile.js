@@ -21,8 +21,8 @@ module.exports = function (grunt) {
         ' * <%= pkg.homepage %>\n' +
         ' * Created by <%= pkg.author %>; Licensed under <%= pkg.license %>\n' +
         ' */\n' +
-        '\n(function() {\n +',
-      footer: '\n +}());'
+        '\n(function() {\n',
+      footer: '\n}());'
     },
 
     delta: {
