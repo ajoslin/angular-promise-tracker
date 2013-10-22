@@ -1,11 +1,11 @@
 /*
- * promise-tracker - v1.4.1 - 2013-10-21
+ * promise-tracker - v1.4.2 - 2013-10-22
  * http://github.com/ajoslin/angular-promise-tracker
  * Created by Andy Joslin; Licensed under Public Domain
  */
 
 (function() {
- +angular.module('ajoslin.promise-tracker', []);
+angular.module('ajoslin.promise-tracker', []);
 
 
 angular.module('ajoslin.promise-tracker')
@@ -325,4 +325,4 @@ angular.module('ajoslin.promise-tracker')
 })
 ;
 
- +}());
+}());

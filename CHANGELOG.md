@@ -1,3 +1,15 @@
+# 1.4.2 (2013-10-22)
+
+
+
+## Bug fixes
+### gruntfile
+
+* fix closure problem ([437b4623](http://github.com/ajoslin/angular-promise-tracker/commits/437b4623))
+
+
+
+
 # 1.4.1 (2013-10-21)
 
 
