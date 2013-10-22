@@ -5,7 +5,7 @@
  */
 
 (function() {
- +angular.module('ajoslin.promise-tracker', []);
+angular.module('ajoslin.promise-tracker', []);
 
 
 angular.module('ajoslin.promise-tracker')
@@ -324,5 +324,4 @@ angular.module('ajoslin.promise-tracker')
   }];
 })
 ;
-
- +}());
+}());
