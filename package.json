@@ -18,6 +18,7 @@
     "grunt-contrib-clean": "~0.4.1",
     "grunt-conventional-changelog": "git://github.com/ajoslin/grunt-conventional-changelog",
     "semver": "~1.1.4",
-    "grunt-shell": "~0.2.2"
+    "grunt-shell": "~0.2.2",
+    "load-grunt-tasks": "~0.2.0"
   }
 }
