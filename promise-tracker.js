@@ -260,7 +260,7 @@ angular.module('ajoslin.promise-tracker')
       //## addPromise()
       //Adds a given promise to our tracking
       self.addPromise = function(promise, startArg) {
-        var then = promise && (promise.$then || promise.then);
+        var then = promise && (promise.$then || promise.then || promise.$promise.then); //Adding compatibility with the angular 1.2
         if (!then) {
           throw new Error("promiseTracker#addPromise expects a promise object!");
         }
