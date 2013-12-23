@@ -1,5 +1,5 @@
 /*
- * promise-tracker - v1.4.2 - 2013-10-22
+ * promise-tracker - v1.4.2 - 2013-12-23
  * http://github.com/ajoslin/angular-promise-tracker
  * Created by Andy Joslin; Licensed under Public Domain
  */
@@ -238,6 +238,7 @@ angular.module('ajoslin.promise-tracker')
               //for maxDuration so it doesn't stick around.
               if (trackedPromises.length === 0 && self.maxPromise) {
                 $timeout.cancel(self.maxPromise);
+                self.maxPromise = null;
               }
 
               fireEvent({
@@ -260,8 +261,9 @@ angular.module('ajoslin.promise-tracker')
       //## addPromise()
       //Adds a given promise to our tracking
       self.addPromise = function(promise, startArg) {
-        debugger;
-        var then = promise && (promise.$then || promise.then || promise.$promise.then);
+        var then = promise && (promise.then || 
+                               promise.$then ||
+                               (promise.$promise && promise.$promise.then));
         if (!then) {
           throw new Error("promiseTracker#addPromise expects a promise object!");
         }

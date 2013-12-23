@@ -1,6 +1,15 @@
+<a name="v1.5.0"></a>
+## v1.5.0 (2013-12-23)
+
+#### Features
+
+* support angular-1.2 ngResource)
+
+#### Breaking Changes
+
+* Note: Use of angular-1.0.x and angular-1.1.x are now deprecated.  They will be removed in the next version.
+
 # 1.4.2 (2013-10-22)
-
-
 
 ## Bug fixes
 ### gruntfile
