@@ -7,7 +7,7 @@ angular-promise-tracker
 * [License](#license)
 
 
-## Eh, what?
+## What's this?
 
 So you're building your angular app.  And you want a loading spinner.
 
@@ -15,11 +15,9 @@ You've tried the [normal solution](http://jsfiddle.net/zdam/dBR2r/) (or maybe yo
 
 But you don't want the same global loading spinner whenever any request happens anywhere. That just won't work!
 
-Instead, you want different indicators while different types of request are loading.  You want one spinner while you're fetching data having to do with a user's pizza order, one while fetching user's profile data, and maybe another for some random service you have that returns a promise. All these on different parts of the UI.  Heck, maybe you don't even want a spinner.  You just want to know while http requests of some type are pending.
+Instead, you want different indicators while different types of request are loading.  You want one spinner while you're fetching data having to do with a user's pizza order, one while fetching user's profile data, and maybe another for some random service you have that returns a promise. All these on different parts of the UI.  Or perhaps you aren't in need of a spinner.  You just want to know while http requests of some type are pending.
 
-Well, [sigh no more](http://www.youtube.com/watch?v=eltHv58l8ig) my dear friend, your troubles are over.
-
-## Ok, sounds jolly good! How do I get started?
+## How do I get started?
 
 Check out [the wiki](https://github.com/ajoslin/angular-promise-tracker/wiki#wiki-intro)!
 
