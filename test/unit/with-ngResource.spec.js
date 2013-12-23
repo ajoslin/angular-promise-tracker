@@ -30,9 +30,9 @@ describe('ngResource', function() {
 
   it('should add a $resource instance promise', function() {
     var p = new Pizza();
-    p.$get();
+    var result = p.$get();
     digest();
-    myTracker.addPromise(p);
+    myTracker.addPromise(result);
     expect(myTracker.active()).toBe(true);
     $httpBackend.flush();
     expect(myTracker.active()).toBe(false);
@@ -40,13 +40,13 @@ describe('ngResource', function() {
 
   it('should instantly resolve if resource instance promise is already resolved', function() {
     var p = new Pizza();
-    p.$get();
-    myTracker.addPromise(p);
+    var result = p.$get();
+    myTracker.addPromise(result);
     digest();
     expect(myTracker.active()).toBe(true);
     $httpBackend.flush();
     expect(myTracker.active()).toBe(false);
-    myTracker.addPromise(p);
+    myTracker.addPromise(result);
     digest();
     expect(myTracker.active()).toBe(false);
   });

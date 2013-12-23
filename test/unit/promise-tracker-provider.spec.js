@@ -290,11 +290,12 @@ describe('provider', function() {
     it('should cleanup the maxDuration timeout after finishing', function() {
       var d1 = $q.defer();
       track.addPromise(d1.promise);
+      expect(track.maxPromise).toBeTruthy();
       expect(track.active()).toBe(true);
       d1.resolve();
       digest();
       expect(track.active()).toBe(false);
-      expect($timeout.flush).toThrow();
+      expect(track.maxPromise).toBeFalsy();
     });
   });
 });

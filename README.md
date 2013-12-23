@@ -29,6 +29,7 @@ Check out [the wiki](https://github.com/ajoslin/angular-promise-tracker/wiki#wik
 * Install karma & grunt with `npm install -g karma grunt-cli` to build & test
 * Install local dependencies with `bower install && npm install`
 * Run `grunt` to lint, test, build the code, and build the docs site
+* Run `grunt dev` to watch and re-test on changes
 
 ## <a id="license"></a>License
 

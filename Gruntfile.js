@@ -17,10 +17,10 @@ module.exports = function (grunt) {
       footer: '\n}());'
     },
 
-    delta: {
+    watch: {
       scripts: {
         files: ['src/**/*.js', 'test/unit/**/*.js'],
-        tasks: ['jshint', 'karma:watchold:run', 'karma:watchnew:run']
+        tasks: ['jshint','karma:watch:run']
       },
       gruntfile: {
         files: ['Gruntfile.js'],
@@ -74,21 +74,12 @@ module.exports = function (grunt) {
     },
 
     karma: {
-      watchold: {
-        configFile: 'test/karma-oldangular.conf.js',
+      watch: {
+        configFile: 'test/karma.conf.js',
         background: true
       },
-      watchnew: {
-        configFile: 'test/karma-newangular.conf.js',
-        background: true
-      },
-      continuousold: {
-        configFile: 'test/karma-oldangular.conf.js',
-        singleRun: true,
-        browsers: ['Chrome']
-      },
-      continuousnew: {
-        configFile: 'test/karma-newangular.conf.js',
+      single: {
+        configFile: 'test/karma.conf.js',
         singleRun: true,
         browsers: ['Chrome']
       }
@@ -112,12 +103,10 @@ module.exports = function (grunt) {
     }
   });
 
-  //Rename watch to delta so we can run a couple task before grunt watch starts
-  grunt.renameTask('watch', 'delta');
-  grunt.registerTask('watch', ['karma:watchold', 'karma:watchnew', 'delta']);
+  grunt.registerTask('dev', ['karma:watch', 'watch']);
 
   grunt.registerTask('default', ['jshint', 'test', 'build']);
-  grunt.registerTask('test', ['karma:continuousold', 'karma:continuousnew']);
+  grunt.registerTask('test', ['karma:single']);
   grunt.registerTask('build', ['concat', 'uglify']);
 
   grunt.registerTask('release', 'Bump version, add tag, commit & push new build files', function() {
