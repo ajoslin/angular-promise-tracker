@@ -289,13 +289,112 @@ describe('provider', function() {
 
     it('should cleanup the maxDuration timeout after finishing', function() {
       var d1 = $q.defer();
+      spyOn($timeout, 'cancel');
+      expect(track._maxPromise).toBeUndefined();
       track.addPromise(d1.promise);
-      expect(track.maxPromise).toBeTruthy();
+      expect(track._maxPromise).toBeTruthy();
+      expect(track.active()).toBe(true);
+      expect($timeout.cancel).not.toHaveBeenCalled(); //sanity
+      d1.resolve();
+      digest();
+      expect($timeout.cancel).toHaveBeenCalled();
+      expect(track.active()).toBe(false);
+      expect(track._maxPromise).toBeFalsy();
+    });
+  });
+
+  describe('activation delay', function() {
+    var track, $timeout;
+    beforeEach(inject(function(_$timeout_) {
+      $timeout = _$timeout_;
+      track = promiseTracker('delayer', {
+        activationDelay: 500
+      });
+    }));
+
+    it('should not be active until delay elapses', function() {
+      var d = $q.defer();
+      expect(track._delayPromise).toBeUndefined();
+      track.addPromise(d.promise);
+      expect(track._delayPromise).toBeTruthy();
+      expect(track.active()).toBe(false);
+      $timeout.flush();
+      expect(track.active()).toBe(true);
+      d.resolve();
+      digest();
+      expect(track.active()).toBe(false);
+    });
+
+    it('should, even if adding multiple promises, not be active until delay elapses', function() {
+      var d1 = $q.defer(), d2 = $q.defer();
+      track.addPromise(d1.promise);
+      expect(track.active()).toBe(false);
+      track.addPromise(d2.promise);
+      expect(track.active()).toBe(false);
+      $timeout.flush();
       expect(track.active()).toBe(true);
       d1.resolve();
       digest();
+      expect(track.active()).toBe(true);
+      d2.reject();
+      digest();
       expect(track.active()).toBe(false);
-      expect(track.maxPromise).toBeFalsy();
     });
+
+    it('should cleanup activationDelay $timeout if the tracker ends early', function() {
+      var d1 = $q.defer();
+      spyOn($timeout, 'cancel');
+      track.addPromise(d1.promise);
+      expect(track.active()).toBe(false);
+      expect(track._delayPromise).toBeTruthy();
+      expect($timeout.cancel).not.toHaveBeenCalled(); //sanity
+      d1.resolve();
+      digest();
+      expect($timeout.cancel).toHaveBeenCalled(); //sanity
+      expect(track._delayPromise).toBeFalsy();
+      expect(track.active()).toBe(false);
+    });
+
+  });
+
+  describe('activationDelay, minDuration, maxDuration', function() {
+    it('min and activationDelay', inject(function($timeout) {
+      var track = promiseTracker('t1', {
+        activationDelay: 100,
+        minDuration: 200
+      });
+      var d1 = $q.defer();
+      track.addPromise(d1.promise);
+      expect(track._delayPromise).toBeTruthy();
+      expect(track._minPromise).toBeUndefined();
+      expect(track.active()).toBe(false);
+      $timeout.flush(); //delay goes
+      expect(track.active()).toBe(true);
+      expect(track._delayPromise).toBeFalsy();
+      expect(track._minPromise).toBeTruthy();
+      d1.resolve();
+      digest();
+      //Should still be going due to minDuration
+      expect(track.active()).toBe(true);
+      $timeout.flush();
+      expect(track.active()).toBe(false);
+    }));
+    it('max and activationDelay', inject(function($timeout) {
+      var track = promiseTracker('t1', {
+        activationDelay: 100,
+        maxDuration: 200
+      });
+      var d1 = $q.defer();
+      track.addPromise(d1.promise);
+      expect(track._delayPromise).toBeTruthy();
+      expect(track._maxPromise).toBeUndefined();
+      $timeout.flush(); //delay goes
+      expect(track.active()).toBe(true);
+      expect(track._delayPromise).toBeFalsy();
+      expect(track._maxPromise).toBeTruthy();
+      $timeout.flush(); //let maxDuration elapse
+      expect(track.active()).toBe(false);
+    }));
+    
   });
 });

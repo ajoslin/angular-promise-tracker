@@ -71,15 +71,20 @@ angular.module('ajoslin.promise-tracker')
       };
       self.setMaxDuration(options.maxDuration);
 
+      self.setActivationDelay = function(newDelay) {
+        self._activationDelay = newDelay;
+      };
+      self.setActivationDelay(options.activationDelay);
+
       //## active()
-      //Returns whether the promiseTracker is active - detect if we're
-      //currently tracking any promises.
       self.active = function() {
+        if (self._delayPromise) {
+          return false;
+        }
         return trackedPromises.length > 0;
       };
 
       //## cancel()
-      //Resolves all the current promises, immediately ending the tracker.
       self.cancel = function() {
         angular.forEach(trackedPromises, function(deferred) {
           deferred.resolve();
@@ -88,7 +93,6 @@ angular.module('ajoslin.promise-tracker')
 
       //Fire an event bound with #on().
       //@param options: {id: uniqueId, event: string, value: someValue}
-      //Calls registered callbacks for `event` with params (`value`, `id`)
       function fireEvent(options) {
         angular.forEach(callbacks[options.event], function(cb) {
           cb.call(self, options.value, options.id);
@@ -113,15 +117,22 @@ angular.module('ajoslin.promise-tracker')
         //promises, we reset our 'minimum duration' and 'maximum duration'
         //again.
         if (trackedPromises.length === 1) {
-          if (self._minDuration) {
-            self.minPromise = $timeout(angular.noop, self._minDuration);
+          if (self._activationDelay) {
+            self._delayPromise = $timeout(function() {
+              self._delayPromise = null;
+              startMinMaxDuration();
+            }, self._activationDelay);
           } else {
-            //No minDuration means we just instantly resolve for our 'wait'
-            //promise.
-            self.minPromise = $q.when(true);
+            startMinMaxDuration();
+          }
+        }
+
+        function startMinMaxDuration() {
+          if (self._minDuration) {
+            self._minPromise = $timeout(angular.noop, self._minDuration);
           }
           if (self._maxDuration) {
-            self.maxPromise = $timeout(deferred.resolve, self._maxDuration);
+            self._maxPromise = $timeout(deferred.resolve, self._maxDuration);
           }
         }
 
@@ -140,15 +151,21 @@ angular.module('ajoslin.promise-tracker')
           return function(value) {
             //Before resolving our promise, make sure the minDuration timeout
             //has finished.
-            self.minPromise.then(function() {
+            (self._minPromise || $q.when()).then(function() {
               var index = trackedPromises.indexOf(deferred);
               trackedPromises.splice(index, 1);
 
-              //If this is the last promise, cleanup the timeout
-              //for maxDuration so it doesn't stick around.
-              if (trackedPromises.length === 0 && self.maxPromise) {
-                $timeout.cancel(self.maxPromise);
-                self.maxPromise = null;
+              //If this is the last promise, cleanup the timeouts
+              //for maxDuration and activationDelay
+              if (trackedPromises.length === 0) {
+                if (self._maxPromise) {
+                  $timeout.cancel(self._maxPromise);
+                  self._maxPromise = null;
+                }
+                if (self._delayPromise) {
+                  $timeout.cancel(self._delayPromise);
+                  self._delayPromise = null;
+                }
               }
 
               fireEvent({
@@ -171,7 +188,7 @@ angular.module('ajoslin.promise-tracker')
       //## addPromise()
       //Adds a given promise to our tracking
       self.addPromise = function(promise, startArg) {
-        var then = promise && (promise.then || 
+        var then = promise && (promise.then ||
                                promise.$then ||
                                (promise.$promise && promise.$promise.then));
         if (!then) {
@@ -196,9 +213,7 @@ angular.module('ajoslin.promise-tracker')
       //## createPromise()
       //Create a new promise and return it, and let the user resolve it how
       //they see fit.
-      self.createPromise = function(startArg) {
-        return createPromise(startArg);
-      };
+      self.createPromise = createPromise;
 
       //## on(), bind()
       //ALlow user to bind to start, done, error, or success events for tracked
