@@ -21,16 +21,18 @@ Instead, you want different indicators while different types of request are load
 
 ### Quick Start
 
+The basic idea: each time we add a promise to an instance of a `promiseTracker`, that instance's `active()` method will return true until the promise is resolved. A common use case is showing some sort of loading spinner while an http request is loading.
+
 ```sh
 $ bower install angular-promise-tracker
 ```
 ```html
 <body ng-app ng-controller="MainCtrl">
-  <div class="loading-box" ng-show="loadingTracker.active()">
+  <div class="my-super-awesome-loading-box" ng-show="loadingTracker.active()">
     Loading...
   </div>
   <button ng-click="fetchSomething()">Fetch Something</button>
-  <button ng-click="fetchSomething()">Delay Something</button>
+  <button ng-click="delaySomething()">Delay Something</button>
   <script src="angular.js"></script>
   <script src="angular-promise-tracker.js"></script>
 </body>
