@@ -1,7 +1,7 @@
 angular-promise-tracker
 =======================
 
-* [Demo](http://plnkr.co/edit/3uAe0NdXLz1lCYlhpaMp?p=preview)
+* [Quick Start](#quick-start)
 * [Documentation](#documentation)
 * [Changes](https://github.com/ajoslin/angular-promise-tracker/tree/master/CHANGELOG.md)
 * [License](#license)
@@ -23,11 +23,13 @@ Instead, you want different indicators while different types of request are load
 
 The basic idea: each time we add one or more promises to an instance of a `promiseTracker`, that instance's `active()` method will return true until all added promises are resolved. A common use case is showing some sort of loading spinner while some http requests are loading.
 
+[Play with the below code on Plunkr](http://plnkr.co/edit/PrO2ou9b1uANbeGoX6eB?p=preview)
+
 ```sh
 $ bower install angular-promise-tracker
 ```
 ```html
-<body ng-app ng-controller="MainCtrl">
+<body ng-app="myApp" ng-controller="MainCtrl">
   <div class="my-super-awesome-loading-box" ng-show="loadingTracker.active()">
     Loading...
   </div>
