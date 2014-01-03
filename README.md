@@ -21,7 +21,7 @@ Instead, you want different indicators while different types of request are load
 
 ### Quick Start
 
-The basic idea: each time we add a promise to an instance of a `promiseTracker`, that instance's `active()` method will return true until the promise is resolved. A common use case is showing some sort of loading spinner while an http request is loading.
+The basic idea: each time we add one or more promises to an instance of a `promiseTracker`, that instance's `active()` method will return true until all added promises are resolved. A common use case is showing some sort of loading spinner while some http requests are loading.
 
 ```sh
 $ bower install angular-promise-tracker
