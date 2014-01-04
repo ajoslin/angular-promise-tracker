@@ -139,7 +139,7 @@ angular.module('myApp', ['ajoslin.promise-tracker'])
 * **tracker.on(eventName, callback)**
 
   - `eventName` `{string}` - The event to bind to. Available eventNames are:
-      * `'start'`, `'end'`, `'success'`, `'error'`
+      * `'start'`, `'done'`, `'success'`, `'error'`
   - `callback` `{function}` - The function to be called when the event fires on our promiseTracker.  Takes two arguments: `(data, promiseId)`.
       * `eventData` `{object|string|number}` - The `data` argument passed when the promise was added.
       * `promiseId` `{uid}` - Each promise added to our tracker has a unique id, and all events for a promise. w
@@ -160,7 +160,7 @@ angular.module('myApp', ['ajoslin.promise-tracker'])
     .on('start', function(httpConfig, promiseId) {
       httpLog.push('Promise ' + promiseId + ' at ' + httpConfig.url + ' is starting!');
     })
-    .on('end', function(httpConfig. promiseId) {
+    .on('done', function(httpConfig. promiseId) {
       httpLog.push('Promise ' + promiseId + 'at ' + httpConfig.url + ' is done!');
     });
   ```
@@ -168,7 +168,7 @@ angular.module('myApp', ['ajoslin.promise-tracker'])
 * **tracker.off(eventName[, callback)**
 
   - `eventName` `{string}` - The event to unbind events from.  available Event names are:
-      * `'start'`, `'end'`, `'success'`, `'error'`
+      * `'start'`, `'done'`, `'success'`, `'error'`
   - `callback` `{string}` (optional) - The specific callback to unbind. If not given, will unbind all callbacks for the given eventName.
 
   Unbind events added with `on`.  Usage example:
