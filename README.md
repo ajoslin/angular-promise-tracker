@@ -2,7 +2,7 @@ angular-promise-tracker
 =======================
 
 * [Quick Start](#quick-start)
-* [Documentation](#documentation)
+* [API Documentation](#api)
 * [Changes](https://github.com/ajoslin/angular-promise-tracker/tree/master/CHANGELOG.md)
 * [License](#license)
 
