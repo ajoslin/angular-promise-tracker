@@ -1,29 +1,18 @@
 angular-promise-tracker
 =======================
 
+Small, feature filled library used to easily add spinners or general promise/request tracking to your angular app.
+
 * [Quick Start](#quick-start)
-* [API Documentation](#api)
+* [API Documentation](#api-documentation)
 * [Changes](https://github.com/ajoslin/angular-promise-tracker/tree/master/CHANGELOG.md)
 * [License](#license)
 
-
-## What's this?
-
-So you're building your angular app.  And you want a loading spinner.
-
-You've tried the [normal solution](http://jsfiddle.net/zdam/dBR2r/) (or maybe you haven't), and it has problems.  It presents a loading spinner on *every request*!
-
-But you don't want the same global loading spinner whenever any request happens anywhere. That just won't work!
-
-Instead, you want different indicators while different types of request are loading.  You want one spinner while you're fetching data having to do with a user's pizza order, one while fetching user's profile data, and maybe another for some random service you have that returns a promise. All these on different parts of the UI.  Or perhaps you aren't in need of a spinner.  You just want to know while http requests of some type are pending.
-
-## Documentation
-
-### Quick Start
+## Quick Start
 
 The basic idea: each time we add one or more promises to an instance of a `promiseTracker`, that instance's `active()` method will return true until all added promises are resolved. A common use case is showing some sort of loading spinner while some http requests are loading.
 
-[Play with the below code on Plunkr](http://plnkr.co/edit/PrO2ou9b1uANbeGoX6eB?p=preview)
+[Play with this example on plunkr](http://plnkr.co/edit/PrO2ou9b1uANbeGoX6eB?p=preview)
 
 ```sh
 $ bower install angular-promise-tracker
@@ -65,7 +54,7 @@ angular.module('myApp', ['ajoslin.promise-tracker'])
 });
 ```
 
-### API
+## API Documentation
 
 ### Service `promiseTracker`
 
