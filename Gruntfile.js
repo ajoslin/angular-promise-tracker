@@ -95,7 +95,7 @@ module.exports = function (grunt) {
       release: {
         command: [
           'cp <%= dist %>/promise-tracker.js <%= dist %>/promise-tracker.min.js .',
-          'git commit promise-tracker.js promise-tracker.min.js <%= pkgFile %> <%= changelog.options.dest %> -m "release(): v<%= pkg.version %>"',
+          'git commit -am "release(): v<%= pkg.version %>"',
           'git tag v<%= pkg.version %>',
           'git push --tags origin master'
         ].join(' && ')
@@ -108,30 +108,4 @@ module.exports = function (grunt) {
   grunt.registerTask('default', ['jshint', 'test', 'build']);
   grunt.registerTask('test', ['karma:single']);
   grunt.registerTask('build', ['concat', 'uglify']);
-
-  grunt.registerTask('release', 'Bump version, add tag, commit & push new build files', function() {
-    var VERSION_REGEX = /([\'|\"]version[\'|\"][ ]*:[ ]*[\'|\"])([\d|.]*)([\'|\"])/i;
-    var RELEASE_TYPES = {"minor":1, "major":1, "patch":1};
-
-    var semver = require('semver');
-    var releaseType = this.args[0];
-
-    if (!(releaseType in RELEASE_TYPES) ) {
-      grunt.fail.fatal("Release type not specified! Please specify one of the " +
-                  "following: " + Object.keys(RELEASE_TYPES).join(', '));
-    }
-
-    var pkg = grunt.file.read(grunt.config('pkgFile'));
-    var version;
-    pkg = pkg.replace(VERSION_REGEX, function (match, left, center, right) {
-      version = semver.inc(center, releaseType);
-      return left + version + right;
-    });
-    grunt.file.write(grunt.config('pkgFile'), pkg);
-    //Refresh config
-    grunt.config('pkg', grunt.file.readJSON(grunt.config('pkgFile')));
-
-    grunt.task.run(['build', 'changelog', 'shell:release']);
-
-  });
 };

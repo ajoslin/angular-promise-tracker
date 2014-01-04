@@ -1,3 +1,10 @@
+<a name="v1.5.1"></a>
+### v1.5.1 (2014-01-04)
+
+#### Features
+
+* **promiseTracker:** add `activationDelay` option (see documentation in README.md)
+
 <a name="v1.5.0"></a>
 ## v1.5.0 (2013-12-23)
 

@@ -27,12 +27,13 @@ The basic idea: each time we add a promise to an instance of a `promiseTracker`,
 $ bower install angular-promise-tracker
 ```
 ```html
-<body ng-app ng-controller="MainCtrl">
+<body ng-app="myApp" ng-controller="MainCtrl">
   <div class="my-super-awesome-loading-box" ng-show="loadingTracker.active()">
     Loading...
   </div>
   <button ng-click="fetchSomething()">Fetch Something</button>
   <button ng-click="delaySomething()">Delay Something</button>
+
   <script src="angular.js"></script>
   <script src="angular-promise-tracker.js"></script>
 </body>
@@ -64,74 +65,134 @@ angular.module('myApp', ['ajoslin.promise-tracker'])
 
 ### API
 
-#### Service `promiseTracker`
+### Service `promiseTracker`
 
-##### promiseTracker(trackerId[, options])
+* **promiseTracker(trackerId[, options])**
 
-* `trackerId` `{string}` - The unique identifier for this tracker.  Will create or get the tracker with this identifier.
+  - `trackerId` `{string}` - The unique identifier for this tracker.  Will create or get the tracker with this identifier.
 
-Options can be given as an object, with the following allowed values:
+  Options can be given as an object, with the following allowed values:
 
-* `activationDelay` `{Number}` - Number of milliseconds that an added promise needs to be pending before this tracker is active.
-  - Usage example: You have some http calls that sometimes return too quickly for a loading spinner to look good. You only want to show the tracker if a promise is pending for over 500ms. You put `{activationDelay: 500}` in options.
-* `minDuration` `{Number}` - Minimum number of milliseconds that a tracker will stay active.
-  - Usage example: You want a loading spinner to always show up for at least 750ms. You put `{minDuration: 750}` in options.
-* `maxDuration` `{Number}` - Maximum number of milliseconds that a tracker will stay active.
-  - Usage example: Your http request takes over ten seconds to come back.  You don't want to display  a loading spinner that long; only for two seconds.  You put `{maxDuration: 2000}` in options.
+  - `activationDelay` `{Number}` - Number of milliseconds that an added promise needs to be pending before this tracker is active.
+      * Usage example: You have some http calls that sometimes return too quickly for a loading spinner to look good. You only want to show the tracker if a promise is pending for over 500ms. You put `{activationDelay: 500}` in options.
+  - `minDuration` `{Number}` - Minimum number of milliseconds that a tracker will stay active.
+      * Usage example: You want a loading spinner to always show up for at least 750ms. You put `{minDuration: 750}` in options.
+  - `maxDuration` `{Number}` - Maximum number of milliseconds that a tracker will stay active.
+      * Usage example: Your http request takes over ten seconds to come back.  You don't want to display  a loading spinner that long; only for two seconds.  You put `{maxDuration: 2000}` in options.
 
-#### `$http` Sugar
+### **`$http` Sugar**
 
-Any $http call's `config` parameter can have a `tracker` field.
+  * **Any $http call's `config` parameter can have a `tracker` field. Examples:**
 
-```js
-//Add $http promise to tracker with id 'myTracker'
-$http('/banana', { tracker: 'myTracker' })`
-```
-```js
-//Add $http promise to both 'tracker1' and 'tracker2'
-`$http.post('/elephant', {some: 'data'}, { tracker: ['tracker1', 'tracker2'] })`
-```
+  ```js
+  //Add $http promise to tracker with id 'myTracker'
+  $http('/banana', { tracker: 'myTracker' })
+  ```
+  ```js
+  //Add $http promise to both 'tracker1' and 'tracker2'
+  $http.post('/elephant', {some: 'data'}, { tracker: ['tracker1', 'tracker2'] })
+  ```
 
-#### Instantiated promiseTracker
+### Instantiated promiseTracker
 
 `var tracker = promiseTracker("myId", {/*options*/});`
 
-##### `boolean` tracker.active()
+* **`boolean` tracker.active()**
 
-* Whether this tracker is currently active. That is, whether any of the promises added to/created by this tracker are still pending, or the `activationDelay` has not been met yet.
+  Returns whether this tracker is currently active. That is, whether any of the promises added to/created by this tracker are still pending, or the `activationDelay` has not been met yet.
 
-##### `void` tracker.addPromise(promise[, eventData])
+* **`void` tracker.addPromise(promise[, eventData])**
 
-* `promise` `{object}`
-* `eventData` `{object|string|number}` (optional) - Argument to be passed to tracker's 'start' event (see `tracker.on()` below)
+  Add any arbitrary promise to tracker. `tracker.active()` will be true until `promise` is resolved or rejected.
 
-Add any arbitrary promise to tracker. `tracker.active()` will be true until `promise` is resolved or rejected.
+  - `promise` `{object}` - Promise to add
+  - `eventData` `{object|string|number}` (optional) - Argument to be passed to tracker's 'start' event (see `tracker.on()` below)
 
-##### `promise` tracker.createPromise([eventData])
+  Usage Example:
 
-* `eventData` `{object|string|number}` (optional) - Argument to be passed to tracker's 'start' event (see `tracker.on()` below)
+  ```js
+  var promise = $timeout(doSomethingCool, 1000);
+  console.log(myTracker.active()); // => true
+  //1000 milliseconds later...
+  console.log(myTracker.active()); // => false
+  ```
 
-Creates and returns a new deferred object that is tracked by our promise. Example:
+* **`promise` tracker.createPromise([eventData])**
 
-```js
-var deferred = myTracker.createPromise()
-console.log(myTracker.active()) // => true
-function later() {
-  deferred.resolve();
-  console.log(myTracker.active()) // => false
-}
-```
+  Creates and returns a new deferred object that is tracked by our promise.
 
-#### tracker.on(eventName, callback)
+  - `eventData` `{object|string|number}` (optional) - Argument to be passed to tracker's 'start' event (see `tracker.on()` below)
 
-(.on docs coming soon)
-<!--
-* `eventName` `{string}` - The event to bind to. Available eventNames are:
-  - `'start'`, `'end'`, `'success'`, `'error'`
-* `callback` `{function}` - The function to be called when the event fires on our promiseTracker.  Takes two arguments: `(data, promiseId)`.
-  - `data` `{object|string|number}` - The `data` argument passed when the promise was added.
-  - `promiseId` `{uid}` - Each promise added to our tracker has a unique id. This is only here so you can know when a `start` event and kkkjj
-  -->
+  Usage Example:
+
+  ```js
+  var deferred = myTracker.createPromise()
+  console.log(myTracker.active()) // => true
+  function later() {
+    deferred.resolve();
+    console.log(myTracker.active()) // => false
+  }
+  ```
+
+* **tracker.on(eventName, callback)**
+
+  - `eventName` `{string}` - The event to bind to. Available eventNames are:
+      * `'start'`, `'end'`, `'success'`, `'error'`
+  - `callback` `{function}` - The function to be called when the event fires on our promiseTracker.  Takes two arguments: `(data, promiseId)`.
+      * `eventData` `{object|string|number}` - The `data` argument passed when the promise was added.
+      * `promiseId` `{uid}` - Each promise added to our tracker has a unique id, and all events for a promise. w
+
+  You can listen to when any promise added to your tracker changes state. `tracker.on('start', fn)` will call `fn` every time any promise is added to `tracker`.
+
+  `fn` will be called with `eventData`, and a unique string representing the `id` of the promise on this tracker. The `eventData` will be an http config object if the promise was added through [$http.config.tracker](#http-sugar), else the `eventData` argument passed to `addPromise`/`createPromise`.
+
+  Usage Example:
+
+  ```js
+  //We want to keep an object called httpLog which tells about our http requests.
+  var httpLog = [];
+  var tracker = promiseTracker('myTracker');
+  tracker.addPromise($http.get('/hello'));
+  tracker.addPromise($http.get('/goodbye'));
+  tracker
+    .on('start', function(httpConfig, promiseId) {
+      httpLog.push('Promise ' + promiseId + ' at ' + httpConfig.url + ' is starting!');
+    })
+    .on('end', function(httpConfig. promiseId) {
+      httpLog.push('Promise ' + promiseId + 'at ' + httpConfig.url + ' is done!');
+    });
+  ```
+
+* **tracker.off(eventName[, callback)**
+
+  - `eventName` `{string}` - The event to unbind events from.  available Event names are:
+      * `'start'`, `'end'`, `'success'`, `'error'`
+  - `callback` `{string}` (optional) - The specific callback to unbind. If not given, will unbind all callbacks for the given eventName.
+
+  Unbind events added with `on`.  Usage example:
+
+  ```js
+  myApp.controller('SuperCtrl', function($scope, promiseTracker, $http) {
+    $scope.superTracker = promiseTracker('super');
+
+    $scope.saveProp = function(prop, data) {
+      $http.post('/api/'+prop, data, {tracker: 'super'})
+    };
+    $scope.removeProp = function(prop) {
+      $http['delete']('/api/'+prop, {tracker: 'super'})
+    };
+
+    $scope.superTracker.on('error', onErr)
+    function onErr(httpResponse, promiseId) {
+      alert('Error! ' + httpResponse.data.error);
+    };
+
+    $scope.$on('$destroy', function() {
+      $scope.superTracker.off('error', onErr);
+    });
+  });
+  ```
+
 
 ## Development
 
@@ -139,6 +200,8 @@ function later() {
 * Install local dependencies with `bower install && npm install`
 * Run `grunt` to lint, test, build the code, and build the docs site
 * Run `grunt dev` to watch and re-test on changes
+
+#### New Versions
 
 ## <a id="license"></a>License
 
