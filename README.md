@@ -90,7 +90,7 @@ angular.module('myApp', ['ajoslin.promise-tracker'])
 
 * **`boolean` tracker.active()**
 
-  Returns whether this tracker is currently active. That is, whether any of the promises added to/created by this tracker are still pending, or the `activationDelay` has not been met yet.
+  Returns whether this tracker is currently active. That is, whether any of the promises added to/created by this tracker are still pending (or if `activationDelay` is still counting down it will be false).
 
 * **`void` tracker.addPromise(promise[, eventData])**
 
@@ -103,6 +103,7 @@ angular.module('myApp', ['ajoslin.promise-tracker'])
 
   ```js
   var promise = $timeout(doSomethingCool, 1000);
+  myTracker.addPromise(promise);
   console.log(myTracker.active()); // => true
   //1000 milliseconds later...
   console.log(myTracker.active()); // => false
