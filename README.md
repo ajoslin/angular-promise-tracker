@@ -97,7 +97,7 @@ angular.module('myApp', ['ajoslin.promise-tracker'])
   Add any arbitrary promise to tracker. `tracker.active()` will be true until `promise` is resolved or rejected.
 
   - `promise` `{object}` - Promise to add
-  - `eventData` `{object|string|number}` (optional) - Argument to be passed to tracker's 'start' event (see `tracker.on()` below)
+  - `eventData` `{*}` (optional) - Argument to be passed to tracker's 'start' event (see `tracker.on()` below)
 
   Usage Example:
 
@@ -111,9 +111,9 @@ angular.module('myApp', ['ajoslin.promise-tracker'])
 
 * **`promise` tracker.createPromise([eventData])**
 
-  Creates and returns a new deferred object that is tracked by our promise.
+  Creates and returns a new deferred object that is tracked by our promiseTracker.
 
-  - `eventData` `{object|string|number}` (optional) - Argument to be passed to tracker's 'start' event (see `tracker.on()` below)
+  - `eventData` `{*}` (optional) - Argument to be passed to tracker's 'start' event (see `tracker.on()` below)
 
   Usage Example:
 
@@ -131,7 +131,7 @@ angular.module('myApp', ['ajoslin.promise-tracker'])
   - `eventName` `{string}` - The event to bind to. Available eventNames are:
       * `'start'`, `'done'`, `'success'`, `'error'`
   - `callback` `{function}` - The function to be called when the event fires on our promiseTracker.  Takes two arguments: `(data, promiseId)`.
-      * `eventData` `{object|string|number}` - The `data` argument passed when the promise was added.
+      * `eventData` `{*}` - The `data` argument passed when the promise was added.
       * `promiseId` `{uid}` - Each promise added to our tracker has a unique id, and all events for a promise. w
 
   You can listen to when any promise added to your tracker changes state. `tracker.on('start', fn)` will call `fn` every time any promise is added to `tracker`.
