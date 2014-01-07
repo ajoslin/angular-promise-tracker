@@ -37,6 +37,47 @@ angular.module('ajoslin.promise-tracker')
   }
   var trackers = {};
 
+  /**
+   * @ngdoc object
+   * @name ajoslin.promise-tracker.promiseTracker
+   *
+   * @requires $q
+   * @requires $timeout
+   *
+   * @description
+   * `promiseTracker` service is a factory that returns promise tracker instances, that you
+   * can use to, well, track promises. Simply call it with a promise tracker name. For example
+   * the following factory call returns a ninja promise tracker:
+   *
+   * <pre>
+   * var app = angular.module('myApp', ['ajoslin.promise-tracker']);
+   *
+   * app.controller('NinjaCtrl', function ($scope, promiseTracker) {
+   *   $scope.ninjaFinder = promiseTracker('ninja');
+   * });
+   * </pre>
+   *
+   * Which is a cool thing, because we can now use the returned tracker to for example showing
+   * some loading animation based on the given API.
+   *
+   * <pre>
+   * <div ng-show="ninjaFinder.active()">Loading...</div>
+   * </pre>
+   *
+   * @param {string} trackerName Promise tracker identifier
+   * @param {object=} options Optional options object that acts as an interface
+   * to kind of control how the tracker shoud behave. Possible options are:
+   *
+   *  - **minDuration** - `{number}` - Minimal duration how long a tracker should be active, even if all it's  promises have been resolved.
+   *  - **maxDuration** - `{number}` - Maximal duration that describes how long the tracker will be active, no matter how long it's promises take to be resolved.
+   *
+   *  @returns {object} Newly created promiseTracker object with the following set of methods:
+   *
+   *  - `{bool}` `active()` - Returns true or false whether this tracker is currently tracking one or more unresolved promises.
+   *  - `{void}` `addPromise({object} promise, {number=} startParam)` - Starts tracking the given promise until its resolved or rejected.
+   *  - `{void}` `cancel()` - Stops tracking all current promises. `tracker.active()` will immediately evaluate to false following `cancel()`.
+   *  - `{object} `createPromise({number=} startParam)` - Creates a new promise to be tracked, but does not piggyback onto an existing promise.
+   */
   this.$get = ['$q', '$timeout', function($q, $timeout) {
     var self = this;
 
