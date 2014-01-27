@@ -117,7 +117,7 @@ angular.module('myApp', ['ajoslin.promise-tracker'])
 
 * **`promise` tracker.createPromise()**
 
-  Creates and returns a new deferred object that is tracked by our promise.
+  Creates and returns a new deferred object that is tracked by our promiseTracker.
 
   Usage Example:
 
