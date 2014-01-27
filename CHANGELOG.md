@@ -1,3 +1,56 @@
+<a name="2.0.0-beta1"></a>
+### 2.0.0-beta1 (2014-01-27)
+
+
+#### Features
+
+* **promiseTracker:**
+  * remove events system ([d3770aac](http://github.com/ajoslin/angular-promise-tracker/commit/d3770aacbd1d1233dcf3f894982004939e64bf91))
+  * add register() and deregister() methods ([cab3c620](http://github.com/ajoslin/angular-promise-tracker/commit/cab3c62013ed3dcb9a0b47d9d1d5ae17d2fe6ab4))
+
+
+#### Breaking Changes
+
+* The events system has been removed.  That means that `promiseTracker.on()`
+and `promiseTracker.off()` no longer exist. In essence, events were a poor way of doing
+'hooks' on promises that we wanted to do.  See [this
+issue](https://github.com/ajoslin/angular-promise-tracker/issues/37) for
+more information.
+
+  [Open an
+  issue of your own](https://github.com/ajoslin/angular-promise-tracker/issues) if you
+  were using events and need help migrating to use another method.
+
+  Check [the
+  README](https://github.com/ajoslin/angular-promise-tracker/tree/master/README.md)
+  for details on the current API for promiseTracker.
+   ([d3770aac](http://github.com/ajoslin/angular-promise-tracker/commit/d3770aacbd1d1233dcf3f894982004939e64bf91))
+
+* A promiseTracker instance can no longer be created with the
+`promiseTracker` function, it is a getter only now.
+
+  To migrate your code, change the following:
+
+  ```js
+  var newTracker = promiseTracker('newTracker', options);
+  //..later
+  var tracker = promiseTracker('newTracker');
+  ```
+
+  To:
+
+  ```js
+  var newTracker = promiseTracker.register('newTracker', options);
+  //..later
+  var tracker = promiseTracker('newTracker');
+  ```
+
+  Check the [project
+  README](http://github.com/ajoslin/angular-promise-tracker/tree/master/README.md)
+  for more details about this change.
+   ([cab3c620](http://github.com/ajoslin/angular-promise-tracker/commit/cab3c62013ed3dcb9a0b47d9d1d5ae17d2fe6ab4))
+
+
 <a name="v1.5.1"></a>
 ### v1.5.1 (2014-01-04)
 
