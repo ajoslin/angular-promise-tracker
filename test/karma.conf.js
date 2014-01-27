@@ -30,7 +30,7 @@ module.exports = function(config) {
 
     // test results reporter to use
     // possible values: 'dots', 'progress', 'junit', 'growl', 'coverage'
-    reporters: ['progress'],
+    reporters: [process.env.TRAVIS ? 'dots' : 'progress'],
 
 
     // web server port
@@ -58,7 +58,7 @@ module.exports = function(config) {
     // - Safari (only Mac; has to be installed with `npm install karma-safari-launcher`)
     // - PhantomJS
     // - IE (only Windows; has to be installed with `npm install karma-ie-launcher`)
-    browsers: ['Chrome'],
+    browsers: [process.env.TRAVIS ? 'Firefox' : 'Chrome'],
 
 
     // If browser does not capture in given timeout [ms], kill it

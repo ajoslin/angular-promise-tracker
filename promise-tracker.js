@@ -1,5 +1,5 @@
 /*
- * promise-tracker - v2.0.0-beta1 - 2014-01-27
+ * promise-tracker - v2.0.0-beta2 - 2014-01-27
  * http://github.com/ajoslin/angular-promise-tracker
  * Created by Andy Joslin; Licensed under Public Domain
  */
@@ -59,7 +59,7 @@ angular.module('ajoslin.promise-tracker')
 
 
   this.$get = ['$q', '$timeout', function($q, $timeout) {
-    function stopTimeout(promise) {
+    function cancelTimeout(promise) {
       if (promise) {
         $timeout.cancel(promise);
       }
@@ -141,9 +141,8 @@ angular.module('ajoslin.promise-tracker')
         if (tracked.length === 1) {
           if (activationDelay) {
             activationDelayPromise = $timeout(function() {
-              if (activationDelayPromise) {
-                activationDelayPromise = cancelTimeout(activationDelayPromise);
-              }
+              activationDelayPromise = cancelTimeout(activationDelayPromise);
+              startMinMaxDuration();
             }, activationDelay);
           } else {
             startMinMaxDuration();
