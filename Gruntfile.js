@@ -76,12 +76,12 @@ module.exports = function (grunt) {
     karma: {
       watch: {
         configFile: 'test/karma.conf.js',
-        background: true
+        background: true,
       },
       single: {
         configFile: 'test/karma.conf.js',
         singleRun: true,
-        browsers: ['Chrome']
+        browsers: [process.env.TRAVIS ? 'Firefox' : 'Chrome'],
       }
     },
 
