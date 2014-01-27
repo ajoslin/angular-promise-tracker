@@ -27,7 +27,8 @@ more information.
    ([d3770aac](http://github.com/ajoslin/angular-promise-tracker/commit/d3770aacbd1d1233dcf3f894982004939e64bf91))
 
 * A promiseTracker instance can no longer be created with the
-`promiseTracker` function, it is a getter only now.
+`promiseTracker` function, it is a getter only now.  Use 
+`promiseTracker.register()`.
 
   To migrate your code, change the following:
 
