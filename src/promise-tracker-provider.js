@@ -6,7 +6,7 @@ angular.module('ajoslin.promise-tracker')
 
 
   this.$get = ['$q', '$timeout', function($q, $timeout) {
-    function stopTimeout(promise) {
+    function cancelTimeout(promise) {
       if (promise) {
         $timeout.cancel(promise);
       }
@@ -88,9 +88,8 @@ angular.module('ajoslin.promise-tracker')
         if (tracked.length === 1) {
           if (activationDelay) {
             activationDelayPromise = $timeout(function() {
-              if (activationDelayPromise) {
-                activationDelayPromise = cancelTimeout(activationDelayPromise);
-              }
+              activationDelayPromise = cancelTimeout(activationDelayPromise);
+              startMinMaxDuration();
             }, activationDelay);
           } else {
             startMinMaxDuration();
