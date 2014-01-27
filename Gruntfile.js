@@ -96,8 +96,7 @@ module.exports = function (grunt) {
         command: [
           'cp <%= dist %>/promise-tracker.js <%= dist %>/promise-tracker.min.js .',
           'git commit -am "release(): v<%= pkg.version %>"',
-          'git tag v<%= pkg.version %>',
-          'git push --tags origin master'
+          'git tag v<%= pkg.version %>'
         ].join(' && ')
       }
     }
