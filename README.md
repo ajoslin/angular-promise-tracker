@@ -60,7 +60,7 @@ angular.module('myApp', ['ajoslin.promise-tracker'])
 
 * **`tracker` promiseTracker.register(trackerId[, options)**
 
-  - `trackerId` `{string}` - The unique identifier for this tracker.  Will register a tracker with this identifier.
+  Registers a new promiseTracker with the given identifier.
 
   Options can be given as an object, with the following allowed values:
 
@@ -73,11 +73,11 @@ angular.module('myApp', ['ajoslin.promise-tracker'])
 
 * **`void` promiseTracker.deregister(trackerId)**
 
-  - `trackerId` `{string}` - Deregisters a tracker `register`ed with the given id.
+  Deregisters a tracker `register`ed with the given identifier.
 
 * **`tracker` promiseTracker(trackerId)**
 
-  - `trackerId` `{string}` - Returns a tracker with `register`ed with the given id.
+  Returns a tracker with `register`ed with the given id.
 
 ### **`$http` Sugar**
 
