@@ -9,6 +9,10 @@ describe('interceptor', function() {
     $http = _$http_;
     $q = _$q_;
     $rootScope = _$rootScope_;
+    promiseTracker.register('tracky', {});
+    promiseTracker.register('andy', {});
+    promiseTracker.register('jonny', {});
+    promiseTracker.register('joe', {});
   }));
 
   function digest() {
@@ -63,33 +67,5 @@ describe('interceptor', function() {
     $httpBackend.flush();
     expect(promiseTracker('jonny').active()).toBe(false);
     expect(promiseTracker('joe').active()).toBe(false);
-  });
-
-  describe('binding events', function() {
-    var spies;
-    beforeEach(function() {
-      var events = ['success','start','done','error'];
-      spies = {};
-      angular.forEach(events, function(e) {
-        spies[e] = jasmine.createSpy();
-        tracky.on(e, spies[e]);
-      });
-    });
-
-    it('should call success, start, done callbacks', function() {
-      $http.get('/pizza', { tracker: 'tracky' });
-      digest();
-      expect(spies.start.mostRecentCall.args[0].url).toBe('/pizza');
-      $httpBackend.flush();
-      expect(spies.done.mostRecentCall.args[0].data).toBe('pepperoni');
-      expect(spies.success.mostRecentCall.args[0].data).toBe('pepperoni');
-    });
-    it('should call success and error callbacks', function() {
-      $http.get('/error', { tracker: 'tracky' });
-      digest();
-      $httpBackend.flush();
-      expect(spies.done.mostRecentCall.args[0].data).toBe('monkeys');
-      expect(spies.error.mostRecentCall.args[0].data).toBe('monkeys');
-    });
   });
 });

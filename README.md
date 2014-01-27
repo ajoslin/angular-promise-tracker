@@ -33,7 +33,7 @@ $ bower install angular-promise-tracker
 angular.module('myApp', ['ajoslin.promise-tracker'])
 .controller('MainCtrl', function($scope, $http, $timeout, promiseTracker) {
   //Create / get our tracker with unique ID
-  $scope.loadingTracker = promiseTracker('loadingTracker');
+  $scope.loadingTracker = promiseTracker.register('loadingTracker');
 
   //use `tracker:` shortcut in $http config to link our http promise to a tracker
   $scope.fetchSomething = function(id) {
@@ -58,9 +58,9 @@ angular.module('myApp', ['ajoslin.promise-tracker'])
 
 ### Service `promiseTracker`
 
-* **promiseTracker(trackerId[, options])**
+* **`tracker` promiseTracker.register(trackerId[, options)**
 
-  - `trackerId` `{string}` - The unique identifier for this tracker.  Will create or get the tracker with this identifier.
+  - `trackerId` `{string}` - The unique identifier for this tracker.  Will register a tracker with this identifier.
 
   Options can be given as an object, with the following allowed values:
 
@@ -70,6 +70,14 @@ angular.module('myApp', ['ajoslin.promise-tracker'])
       * Usage example: You want a loading spinner to always show up for at least 750ms. You put `{minDuration: 750}` in options.
   - `maxDuration` `{Number}` - Maximum number of milliseconds that a tracker will stay active.
       * Usage example: Your http request takes over ten seconds to come back.  You don't want to display  a loading spinner that long; only for two seconds.  You put `{maxDuration: 2000}` in options.
+
+* **`void` promiseTracker.deregister(trackerId)**
+
+  - `trackerId` `{string}` - Deregisters a tracker `register`ed with the given id.
+
+* **`tracker` promiseTracker(trackerId)**
+
+  - `trackerId` `{string}` - Returns a tracker with `register`ed with the given id.
 
 ### **`$http` Sugar**
 
@@ -86,18 +94,17 @@ angular.module('myApp', ['ajoslin.promise-tracker'])
 
 ### Instantiated promiseTracker
 
-`var tracker = promiseTracker("myId", {/*options*/});`
+`var tracker = promiseTracker('myId');`
 
 * **`boolean` tracker.active()**
 
   Returns whether this tracker is currently active. That is, whether any of the promises added to/created by this tracker are still pending, or the `activationDelay` has not been met yet.
 
-* **`void` tracker.addPromise(promise[, eventData])**
+* **`void` tracker.addPromise(promise)**
 
   Add any arbitrary promise to tracker. `tracker.active()` will be true until `promise` is resolved or rejected.
 
   - `promise` `{object}` - Promise to add
-  - `eventData` `{object|string|number}` (optional) - Argument to be passed to tracker's 'start' event (see `tracker.on()` below)
 
   Usage Example:
 
@@ -108,82 +115,24 @@ angular.module('myApp', ['ajoslin.promise-tracker'])
   console.log(myTracker.active()); // => false
   ```
 
-* **`promise` tracker.createPromise([eventData])**
+* **`promise` tracker.createPromise()**
 
   Creates and returns a new deferred object that is tracked by our promise.
-
-  - `eventData` `{object|string|number}` (optional) - Argument to be passed to tracker's 'start' event (see `tracker.on()` below)
 
   Usage Example:
 
   ```js
   var deferred = myTracker.createPromise()
   console.log(myTracker.active()) // => true
-  function later() {
-    deferred.resolve();
-    console.log(myTracker.active()) // => false
+  //later...
+  deferred.resolve();
+  console.log(myTracker.active()) // => false
   }
   ```
 
-* **tracker.on(eventName, callback)**
+* **`void` tracker.cancel()**
 
-  - `eventName` `{string}` - The event to bind to. Available eventNames are:
-      * `'start'`, `'done'`, `'success'`, `'error'`
-  - `callback` `{function}` - The function to be called when the event fires on our promiseTracker.  Takes two arguments: `(data, promiseId)`.
-      * `eventData` `{object|string|number}` - The `data` argument passed when the promise was added.
-      * `promiseId` `{uid}` - Each promise added to our tracker has a unique id, and all events for a promise. w
-
-  You can listen to when any promise added to your tracker changes state. `tracker.on('start', fn)` will call `fn` every time any promise is added to `tracker`.
-
-  `fn` will be called with `eventData`, and a unique string representing the `id` of the promise on this tracker. The `eventData` will be an http config object if the promise was added through [$http.config.tracker](#http-sugar), else the `eventData` argument passed to `addPromise`/`createPromise`.
-
-  Usage Example:
-
-  ```js
-  //We want to keep an object called httpLog which tells about our http requests.
-  var httpLog = [];
-  var tracker = promiseTracker('myTracker');
-  tracker.addPromise($http.get('/hello'));
-  tracker.addPromise($http.get('/goodbye'));
-  tracker
-    .on('start', function(httpConfig, promiseId) {
-      httpLog.push('Promise ' + promiseId + ' at ' + httpConfig.url + ' is starting!');
-    })
-    .on('done', function(httpConfig. promiseId) {
-      httpLog.push('Promise ' + promiseId + 'at ' + httpConfig.url + ' is done!');
-    });
-  ```
-
-* **tracker.off(eventName[, callback)**
-
-  - `eventName` `{string}` - The event to unbind events from.  available Event names are:
-      * `'start'`, `'done'`, `'success'`, `'error'`
-  - `callback` `{string}` (optional) - The specific callback to unbind. If not given, will unbind all callbacks for the given eventName.
-
-  Unbind events added with `on`.  Usage example:
-
-  ```js
-  myApp.controller('SuperCtrl', function($scope, promiseTracker, $http) {
-    $scope.superTracker = promiseTracker('super');
-
-    $scope.saveProp = function(prop, data) {
-      $http.post('/api/'+prop, data, {tracker: 'super'})
-    };
-    $scope.removeProp = function(prop) {
-      $http['delete']('/api/'+prop, {tracker: 'super'})
-    };
-
-    $scope.superTracker.on('error', onErr)
-    function onErr(httpResponse, promiseId) {
-      alert('Error! ' + httpResponse.data.error);
-    };
-
-    $scope.$on('$destroy', function() {
-      $scope.superTracker.off('error', onErr);
-    });
-  });
-  ```
-
+  Causes a tracker to immediately become inactive and stop tracking all current promises.
 
 ## Development
 
