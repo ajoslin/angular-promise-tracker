@@ -1,6 +1,8 @@
 angular-promise-tracker
 =======================
 
+[![Build Status](https://travis-ci.org/ajoslin/angular-promise-tracker.png)](https://travis-ci.org/ajoslin/angular-promise-tracker)
+
 Small, feature filled library used to easily add spinners or general promise/request tracking to your angular app.
 
 * [Quick Start](#quick-start)
