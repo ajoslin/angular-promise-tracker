@@ -60,7 +60,7 @@ angular.module('myApp', ['ajoslin.promise-tracker'])
 
 ### Service `promiseTracker`
 
-* **`tracker` promiseTracker.register(trackerId[, options)**
+* **`tracker` promiseTracker.register(trackerId[, options])**
 
   Registers a new promiseTracker with the given identifier.
 
