@@ -73,10 +73,9 @@ angular.module('ajoslin.promise-tracker')
     }
 
     promiseTracker.register = function(id, options) {
-      if (trackers[id]) {
-        throw new Error('Tracker with id "' + id + '" already exists!');
+      if (!trackers[id]) {
+        trackers[id] = new Tracker(options);
       }
-      trackers[id] = new Tracker(options);
       return trackers[id];
     };
 
