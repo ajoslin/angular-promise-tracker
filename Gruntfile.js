@@ -20,7 +20,7 @@ module.exports = function (grunt) {
     watch: {
       scripts: {
         files: ['src/**/*.js', 'test/unit/**/*.js'],
-        tasks: ['jshint','karma:watch:run']
+        tasks: ['karma:watch:run']
       },
       gruntfile: {
         files: ['Gruntfile.js'],
@@ -45,33 +45,13 @@ module.exports = function (grunt) {
           footer: '<%= meta.footer %>'
         },
         files: {
-          '<%= dist %>/promise-tracker.js': ['src/**/*.js']
-        }
-      }
-    },
-
-    uglify: {
-      dist: {
-        options: {
-          banner: "<%= meta.banner %>",
-          footer: '<%= meta.footer %>'
-        },
-        files: {
-          '<%= dist %>/promise-tracker.min.js': ['src/**/*.js']
+          '<%= dist %>/promise-tracker.js': ['src/promise-tracker.js'],
+          '<%= dist %>/promise-tracker-http-intercetpor.js': ['src/http-interceptor.js']
         }
       }
     },
 
     clean: ['demo/**/*'],
-
-    copy: {
-      release: {
-        files: {
-          'promise-tracker.js': '<%= dist %>/promise-tracker.js',
-          'promise-tracker.min.js': '<%= dist %>/promise-tracker.min.js'
-        }
-      }
-    },
 
     karma: {
       watch: {
@@ -94,7 +74,8 @@ module.exports = function (grunt) {
     shell: {
       release: {
         command: [
-          'cp <%= dist %>/promise-tracker.js <%= dist %>/promise-tracker.min.js .',
+          'cp <%= dist %>/*.js .',
+          'grunt changelog',
           'git commit -am "release(): v<%= pkg.version %>"',
           'git tag v<%= pkg.version %>'
         ].join(' && ')
@@ -106,5 +87,5 @@ module.exports = function (grunt) {
 
   grunt.registerTask('default', ['jshint', 'test', 'build']);
   grunt.registerTask('test', ['karma:single']);
-  grunt.registerTask('build', ['concat', 'uglify']);
+  grunt.registerTask('build', ['concat']);
 };
