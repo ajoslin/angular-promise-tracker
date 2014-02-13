@@ -46,7 +46,7 @@ module.exports = function (grunt) {
         },
         files: {
           '<%= dist %>/promise-tracker.js': ['src/promise-tracker.js'],
-          '<%= dist %>/promise-tracker-http-intercetpor.js': ['src/http-interceptor.js']
+          '<%= dist %>/promise-tracker-http-interceptor.js': ['src/http-interceptor.js']
         }
       }
     },

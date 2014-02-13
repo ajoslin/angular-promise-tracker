@@ -1,6 +1,10 @@
 angular-promise-tracker
 =======================
 
+> **Version**: 2.0
+
+(note to users using version 1.x: upgrading has *many* breaking changes, see [the CHANGELOG](https://github.com/ajoslin/angular-promise-tracker/tree/master/CHANGELOG.md).)
+
 [![Build Status](https://travis-ci.org/ajoslin/angular-promise-tracker.png)](https://travis-ci.org/ajoslin/angular-promise-tracker)
 
 Small, feature filled library used to easily add spinners or general promise/request tracking to your angular app.
@@ -24,27 +28,21 @@ $ bower install angular-promise-tracker
   <div class="my-super-awesome-loading-box" ng-show="loadingTracker.active()">
     Loading...
   </div>
-  <button ng-click="fetchSomething()">Fetch Something</button>
   <button ng-click="delaySomething()">Delay Something</button>
+  <button ng-click="fetchSomething()">Fetch Something</button>
 
   <script src="angular.js"></script>
-  <script src="angular-promise-tracker.js"></script>
+  <script src="promise-tracker.js"></script>
+
+  <!-- optional for $http sugar -->
+  <script src="promise-tracker-http-intercetpor.js"></script>
 </body>
 ```
 ```js
 angular.module('myApp', ['ajoslin.promise-tracker'])
 .controller('MainCtrl', function($scope, $http, $timeout, promiseTracker) {
-  //Create / get our tracker with unique ID
-  $scope.loadingTracker = promiseTracker.register('loadingTracker');
-
-  //use `tracker:` shortcut in $http config to link our http promise to a tracker
-  $scope.fetchSomething = function(id) {
-    return $http.get('/something', {
-      tracker: 'loadingTracker'
-    }).then(function(response) {
-      alert('Fetched something! ' + response.data);
-    });
-  };
+  //Create a new tracker
+  $scope.loadingTracker = promiseTracker();
 
   //use `addPromise` to add any old promise to our tracker
   $scope.delaySomething = function() {
@@ -53,6 +51,16 @@ angular.module('myApp', ['ajoslin.promise-tracker'])
     }, 1000);
     $scope.loadingTracker.addPromise(promise);
   };
+
+  //use `tracker:` shortcut in $http config to link our http promise to a tracker
+  //This shortcut is included in promise-tracker-http-interceptor.js
+  $scope.fetchSomething = function(id) {
+    return $http.get('/something', {
+      tracker: 'loadingTracker'
+    }).then(function(response) {
+      alert('Fetched something! ' + response.data);
+    });
+  };
 });
 ```
 
@@ -60,9 +68,9 @@ angular.module('myApp', ['ajoslin.promise-tracker'])
 
 ### Service `promiseTracker`
 
-* **`tracker` promiseTracker.register(trackerId[, options])**
+* **`tracker` promiseTracker([options])**
 
-  Registers a new promiseTracker with the given identifier.
+  Creates and returns a new promiseTracker.
 
   Options can be given as an object, with the following allowed values:
 
@@ -70,33 +78,18 @@ angular.module('myApp', ['ajoslin.promise-tracker'])
       * Usage example: You have some http calls that sometimes return too quickly for a loading spinner to look good. You only want to show the tracker if a promise is pending for over 500ms. You put `{activationDelay: 500}` in options.
   - `minDuration` `{Number}` - Minimum number of milliseconds that a tracker will stay active.
       * Usage example: You want a loading spinner to always show up for at least 750ms. You put `{minDuration: 750}` in options.
-  - `maxDuration` `{Number}` - Maximum number of milliseconds that a tracker will stay active.
-      * Usage example: Your http request takes over ten seconds to come back.  You don't want to display  a loading spinner that long; only for two seconds.  You put `{maxDuration: 2000}` in options.
 
-* **`void` promiseTracker.deregister(trackerId)**
-
-  Deregisters a tracker `register`ed with the given identifier.
-
-* **`tracker` promiseTracker(trackerId)**
-
-  Returns a tracker with `register`ed with the given id.
-
-### **`$http` Sugar**
-
-  * **Any $http call's `config` parameter can have a `tracker` field. Examples:**
+  Often you want a global promiseTracker (eg to show a loading screen); one easy way is to put the tracker on your $rootScope:
 
   ```js
-  //Add $http promise to tracker with id 'myTracker'
-  $http('/banana', { tracker: 'myTracker' })
-  ```
-  ```js
-  //Add $http promise to both 'tracker1' and 'tracker2'
-  $http.post('/elephant', {some: 'data'}, { tracker: ['tracker1', 'tracker2'] })
+  app.run(function($rootScope, promiseTracker) {
+    $rootScope.loadingTracker = promiseTracker();
+  });
   ```
 
 ### Instantiated promiseTracker
 
-`var tracker = promiseTracker('myId');`
+Example: `var myTracker = promiseTracker({ activationDelay: 500, minDuration: 750 });`
 
 * **`boolean` tracker.active()**
 
@@ -126,7 +119,6 @@ angular.module('myApp', ['ajoslin.promise-tracker'])
   ```js
   var deferred = myTracker.createPromise()
   console.log(myTracker.active()) // => true
-  //later...
   deferred.resolve();
   console.log(myTracker.active()) // => false
   }
@@ -135,6 +127,21 @@ angular.module('myApp', ['ajoslin.promise-tracker'])
 * **`void` tracker.cancel()**
 
   Causes a tracker to immediately become inactive and stop tracking all current promises.
+
+### **`$http` Sugar**
+
+  **Requires promise-tracker-http-interceptor.js**
+
+  * **Any $http call's `config` parameter can have a `tracker` field. Examples:**
+
+  ```js
+  //Add $http promise to tracker with id 'myTracker'
+  $http('/banana', { tracker: myPromiseTrackerInstance })
+  ```
+  ```js
+  //Add $http promise to both 'tracker1' and 'tracker2'
+  $http.post('/elephant', {some: 'data'}, { tracker: [myFirstTracker, mySecondTracker] })
+  ```
 
 ## Development
 

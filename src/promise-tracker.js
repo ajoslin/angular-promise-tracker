@@ -1,5 +1,5 @@
 
-angular.module('ajoslin.promise-tracker')
+angular.module('ajoslin.promise-tracker', [])
 
 .provider('promiseTracker', function() {
   var trackers = {};
