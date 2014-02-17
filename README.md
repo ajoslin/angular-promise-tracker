@@ -56,7 +56,7 @@ angular.module('myApp', ['ajoslin.promise-tracker'])
   //This shortcut is included in promise-tracker-http-interceptor.js
   $scope.fetchSomething = function(id) {
     return $http.get('/something', {
-      tracker: 'loadingTracker'
+      tracker: $scope.loadingTracker
     }).then(function(response) {
       alert('Fetched something! ' + response.data);
     });
