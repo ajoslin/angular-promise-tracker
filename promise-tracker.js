@@ -56,7 +56,7 @@ angular.module('ajoslin.promise-tracker', [])
       };
 
       //Create a promise that will make our tracker active until it is resolved.
-      //@return deferred - our deferred object that is being tracked
+      // @return deferred - our deferred object that is being tracked
       self.createPromise = function() {
         var deferred = $q.defer();
         tracked.push(deferred);
