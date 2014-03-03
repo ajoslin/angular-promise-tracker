@@ -3,7 +3,7 @@
 
 **The API has completely changed in 2.0. See the README for details. Synopsis of changes:**
 
-* String ID system for trackers removed, now use instances created with `var myTrack = new promiseTracker([options]);`.
+* String ID system for trackers removed, now use instances created with `var myTrack = new promiseTracker(options);`.
 * http interceptor functionality is now optional; use it by including `promise-tracker-http-interceptor.js`
 * maxDuration option is removed (there are better ways to do this in every case)
 
