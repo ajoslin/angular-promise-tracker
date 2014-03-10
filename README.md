@@ -95,6 +95,10 @@ Example: `var myTracker = promiseTracker({ activationDelay: 500, minDuration: 75
 
   Returns whether this tracker is currently active. That is, whether any of the promises added to/created by this tracker are still pending, or the `activationDelay` has not been met yet.
 
+* **`boolean` tracker.tracking()**
+
+  Returns whether this tracker is currently tracking a request. That is, whether any of the promises added to/created by this tracker are still pending, even if the `activationDelay` has not been met yet.
+
 * **`void` tracker.addPromise(promise)**
 
   Add any arbitrary promise to tracker. `tracker.active()` will be true until `promise` is resolved or rejected.
