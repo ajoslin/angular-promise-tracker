@@ -105,6 +105,7 @@ Example: `var myTracker = promiseTracker({ activationDelay: 500, minDuration: 75
 
   ```js
   var promise = $timeout(doSomethingCool, 1000);
+  myTracker.addPromise(promise);
   console.log(myTracker.active()); // => true
   //1000 milliseconds later...
   console.log(myTracker.active()); // => false
