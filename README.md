@@ -123,10 +123,9 @@ Example: `var myTracker = promiseTracker({ activationDelay: 500, minDuration: 75
 
   ```js
   var deferred = myTracker.createPromise()
-  console.log(myTracker.active()) // => true
+  console.log(myTracker.active()); // => true
   deferred.resolve();
-  console.log(myTracker.active()) // => false
-  }
+  console.log(myTracker.active()); // => false
   ```
 
 * **`void` tracker.cancel()**
