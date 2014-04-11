@@ -1,3 +1,17 @@
+<a name="2.0.1"></a>
+### 2.0.1 (2014-04-11)
+
+
+#### Bug Fixes
+
+* **ie10-:** stop error from bad spacing in comments ([8a1f2c3d](http://github.com/ajoslin/angular-promise-tracker/commit/8a1f2c3dfbebc1477e0341e334f468a8b9325a3b), closes [#42](http://github.com/ajoslin/angular-promise-tracker/issues/42))
+
+
+#### Features
+
+* **promiseTracker:** add tracker.tracking() method ([87776e54](http://github.com/ajoslin/angular-promise-tracker/commit/87776e549c52b8ee446e53b3830893949d9aa451))
+
+
 <a name="2.0.0"></a>
 ### 2.0.0 (2014-01-27)
 

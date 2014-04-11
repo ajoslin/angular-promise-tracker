@@ -77,7 +77,7 @@ module.exports = function (grunt) {
           'cp <%= dist %>/*.js .',
           'grunt changelog',
           'git commit -am "release(): v<%= pkg.version %>"',
-          'git tag v<%= pkg.version %>'
+          'git tag -f v<%= pkg.version %> -m v<%= pkg.version %>'
         ].join(' && ')
       }
     }
