@@ -147,6 +147,25 @@ Example: `var myTracker = promiseTracker({ activationDelay: 500, minDuration: 75
   //Add $http promise to both 'tracker1' and 'tracker2'
   $http.post('/elephant', {some: 'data'}, { tracker: [myFirstTracker, mySecondTracker] })
   ```
+  
+## More Examples
+
+* Do something whenever the tracker's active state changes
+
+```js
+angular.module('app', ['ajoslin.promise-tracker'])
+
+.factory('myTracker', function (promiseTracker) {
+  return promiseTracker();
+})
+
+.controller('AppCtrl', function ($rootScope, myTracker) {
+  $rootScope.$watch(myTracker.active, function (isActive) {
+    //doSomething()
+  });
+});
+```
+;
 
 ## Development
 
