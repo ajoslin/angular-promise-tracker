@@ -35,7 +35,7 @@ $ bower install angular-promise-tracker
   <script src="promise-tracker.js"></script>
 
   <!-- optional for $http sugar -->
-  <script src="promise-tracker-http-intercetpor.js"></script>
+  <script src="promise-tracker-http-interceptor.js"></script>
 </body>
 ```
 ```js
