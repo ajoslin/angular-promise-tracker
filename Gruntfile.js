@@ -51,6 +51,28 @@ module.exports = function (grunt) {
       }
     },
 
+    ngAnnotate: {
+        dist: {
+            files: {
+                '<%= dist %>/promise-tracker.js': ['<%= dist %>/promise-tracker.js'],
+                '<%= dist %>/promise-tracker-http-interceptor.js': ['<%= dist %>/promise-tracker-http-interceptor.js']
+            },
+        },
+    },
+
+    uglify: {
+        dist: {
+          options: {
+            banner: "<%= meta.banner %>",
+            footer: '<%= meta.footer %>'
+          },
+          files: {
+            '<%= dist %>/promise-tracker.min.js': ['<%= dist %>/promise-tracker.js'],
+            '<%= dist %>/promise-tracker-http-interceptor.min.js': ['<%= dist %>/promise-tracker-http-interceptor.js']
+          }
+        }
+    },
+
     clean: ['demo/**/*'],
 
     karma: {
@@ -88,5 +110,5 @@ module.exports = function (grunt) {
 
   grunt.registerTask('default', ['jshint', 'test', 'build']);
   grunt.registerTask('test', ['karma:single']);
-  grunt.registerTask('build', ['concat']);
+  grunt.registerTask('build', ['concat', 'ngAnnotate', 'uglify']);
 };
