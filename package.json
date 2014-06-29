@@ -1,6 +1,7 @@
 {
   "name": "angular-promise-tracker",
   "version": "2.0.1",
+  "main": "promise-tracker.js",
   "author": {
     "name": "Andy Joslin"
   },
