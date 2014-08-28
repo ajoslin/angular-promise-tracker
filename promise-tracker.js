@@ -117,7 +117,7 @@ angular.module('ajoslin.promise-tracker', [])
 
         //When given promise is done, resolve our created promise
         //Allow $then for angular-resource objects
-        promise.then(promiseInstance, function success(value) {
+        promise.then(function success(value) {
           deferred.resolve(value);
           return value;
         }, function error(value) {
