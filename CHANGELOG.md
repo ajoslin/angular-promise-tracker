@@ -1,3 +1,12 @@
+<a name="2.1.0"></a>
+## 2.1.0 (2014-11-13)
+
+
+#### Features
+
+* **promiseTracker:** upgrade to angular 1.3 ([faf1eb01](http://github.com/ajoslin/angular-promise-tracker/commit/faf1eb01e9ebfd5fe03f4683748a45498d5692e4))
+
+
 <a name="2.0.1"></a>
 ### 2.0.1 (2014-04-11)
 
