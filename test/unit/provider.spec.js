@@ -46,8 +46,7 @@ describe('promiseTracker provider', function() {
 
     it('should not error with then, $then, $promise.then', function() {
       promiseTracker().addPromise(q.defer().promise);
-      promiseTracker().addPromise({ then: q.defer().promise.then });
-      promiseTracker().addPromise({ $promise: { then: q.defer().promise.then } });
+      promiseTracker().addPromise({ $promise: q.defer().promise } );
     });
 
     it('should return promise from createPromise', function() {
@@ -87,11 +86,11 @@ describe('promiseTracker provider', function() {
       expect(tracker.tracking()).toBe(true);
 
       tracker = promiseTracker();
-      tracker.addPromise({ then: q.defer().promise.then });
+      tracker.addPromise(q.defer().promise);
       expect(tracker.tracking()).toBe(true);
 
       tracker = promiseTracker();
-      tracker.addPromise({ $promise: { then: q.defer().promise.then } });
+      tracker.addPromise({ $promise: q.defer().promise });
       expect(tracker.tracking()).toBe(true);
     });
 
