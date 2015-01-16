@@ -43,6 +43,10 @@ angular.module('ajoslin.promise-tracker', [])
         //Even if we aren't active, we could still have a promise in our tracker
         return tracked.length > 0;
       };
+  
+      self.promisesCount = function () {
+        return tracked.length;
+      };
 
       self.destroy = self.cancel = function() {
         minDurationPromise = cancelTimeout(minDurationPromise);
