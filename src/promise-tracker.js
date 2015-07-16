@@ -5,6 +5,7 @@ angular.module('ajoslin.promise-tracker', [])
   var trackers = {};
 
   this.$get = ['$q', '$timeout', function($q, $timeout) {
+
     function cancelTimeout(promise) {
       if (promise) {
         $timeout.cancel(promise);
@@ -120,6 +121,16 @@ angular.module('ajoslin.promise-tracker', [])
 
         return deferred;
       };
+
+      self.addPromises = function(arrayPromises) {
+        for(var i=0, l=arrayPromises.length; i < l; i++) {
+          arrayPromises[i] = arraryPromises[i] && (arraryPromises[i].$promise || arraryPromises[i]) || {};
+          if (!promise.then) {
+            throw new Error("promiseTracker#addPromises expects a array of promises objects!");            
+          }
+        }
+        self.addPromise($q.all(arrayPromises));
+      }
     };
   }];
 });
