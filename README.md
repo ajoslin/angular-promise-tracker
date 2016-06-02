@@ -99,7 +99,7 @@ Example: `var myTracker = promiseTracker({ activationDelay: 500, minDuration: 75
 
   Returns whether this tracker is currently tracking a request. That is, whether any of the promises added to/created by this tracker are still pending.  This method has no regard for `activationDelay`.
 
-* **`void` tracker.addPromise(promise)**
+* **`promise` tracker.addPromise(promise)**
 
   Add any arbitrary promise to tracker. `tracker.active()` will be true until `promise` is resolved or rejected.
 
@@ -146,7 +146,7 @@ Example: `var myTracker = promiseTracker({ activationDelay: 500, minDuration: 75
   //Add $http promise to both 'tracker1' and 'tracker2'
   $http.post('/elephant', {some: 'data'}, { tracker: [myFirstTracker, mySecondTracker] })
   ```
-  
+
 ## More Examples
 
 * Do something whenever the tracker's active state changes
