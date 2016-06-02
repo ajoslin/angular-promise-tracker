@@ -1,10 +1,6 @@
 angular-promise-tracker
 =======================
 
-> **Version**: 2.0
-
-(note to users using version 1.x: upgrading has *many* breaking changes, see [the CHANGELOG](https://github.com/ajoslin/angular-promise-tracker/tree/master/CHANGELOG.md).)
-
 [![Build Status](https://travis-ci.org/ajoslin/angular-promise-tracker.png)](https://travis-ci.org/ajoslin/angular-promise-tracker)
 
 Small, feature filled library used to easily add spinners or general promise/request tracking to your angular app.
