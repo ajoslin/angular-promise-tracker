@@ -1,3 +1,13 @@
+<a name="2.2.0"></a>
+## 2.2.0 (2016-06-01)
+
+
+#### Features
+
+* **addPromise:** except an array ([c95aa944](http://github.com/ajoslin/angular-promise-tracker/commit/c95aa944fb2b8c08d1f7e45a58f31fb6a3b2168f))
+* **trackingCount:** add trackingCount method, count of tracked promises ([e681b86c](http://github.com/ajoslin/angular-promise-tracker/commit/e681b86c20f1c87b68a856aea1f413e6801669b1), closes [#65](http://github.com/ajoslin/angular-promise-tracker/issues/65))
+
+
 <a name="2.1.0"></a>
 ## 2.1.0 (2014-11-13)
 
