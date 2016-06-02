@@ -19,16 +19,11 @@ angular.module('ajoslin.promise-tracker', [])
     }
 
     return function PromiseTracker(options) {
-      //do new if user doesn't
-      if (!(this instanceof PromiseTracker)) {
-        return new PromiseTracker(options);
-      }
-
       options = options || {};
 
       //Array of promises being tracked
       var tracked = [];
-      var self = this;
+      var self = {};
 
       //Allow an optional "minimum duration" that the tracker has to stay active for.
       var minDuration = options.minDuration;
@@ -109,10 +104,15 @@ angular.module('ajoslin.promise-tracker', [])
       };
 
       self.addPromise = function(promise) {
+        if (Array.isArray(promise)) {
+          return $q.all(promise.map(self.addPromise));
+        }
+
         promise = promise && (promise.$promise || promise) || {};
         if (!promise.then) {
           throw new Error("promiseTracker#addPromise expects a promise object!");
         }
+
         var deferred = self.createPromise();
 
         //When given promise is done, resolve our created promise
