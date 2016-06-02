@@ -1,5 +1,5 @@
 /*
- * promise-tracker - v2.1.0 - 2014-11-15
+ * promise-tracker - v2.1.0 - 2016-06-01
  * http://github.com/ajoslin/angular-promise-tracker
  * Created by Andy Joslin; Licensed under Public Domain
  */
