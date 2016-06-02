@@ -9,6 +9,9 @@
     "url": "git://github.com/ajoslin/angular-promise-tracker.git"
   },
   "homepage": "https://github.com/ajoslin/angular-promise-tracker",
+  "dependencies": {
+    "angular": ">=1.3.0"
+  },
   "devDependencies": {
     "load-grunt-tasks": "~0.2.1",
     "grunt-contrib-concat": "~0.3.0",
