@@ -46,6 +46,10 @@ angular.module('ajoslin.promise-tracker', [])
         return tracked.length > 0;
       };
 
+      self.trackingCount = function() {
+        return tracked.length;
+      };
+
       self.destroy = self.cancel = function() {
         minDurationPromise = cancelTimeout(minDurationPromise);
         activationDelayPromise = cancelTimeout(activationDelayPromise);
