@@ -14,7 +14,6 @@ describe('promiseTracker provider', function() {
 
   it('should create a tracker with api', function() {
     var tracker = new promiseTracker();
-    expect(tracker instanceof promiseTracker).toBe(true);
     expect(typeof tracker.addPromise).toBe('function');
     expect(typeof tracker.createPromise).toBe('function');
     expect(typeof tracker.destroy).toBe('function');
@@ -23,7 +22,7 @@ describe('promiseTracker provider', function() {
 
   it('should create a tracker even if no `new`', function() {
     var tracker = promiseTracker();
-    expect(tracker instanceof promiseTracker).toBe(true);
+    expect(typeof tracker.addPromise).toBe('function');
   });
 
   it('should not be active by default', function() {

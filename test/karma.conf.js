@@ -17,8 +17,8 @@ module.exports = function(config) {
       'bower_components/angular/angular.js',
       'bower_components/angular-mocks/angular-mocks.js',
       'bower_components/angular-resource/angular-resource.js',
-      'src/promise-tracker.js',
-      'src/http-interceptor.js',
+      'promise-tracker.js',
+      'promise-tracker-http-interceptor.js',
       'test/unit/**/*.js'
     ],
 
