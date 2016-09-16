@@ -9,6 +9,9 @@
 angular.module('ajoslin.promise-tracker')
 .config(['$httpProvider', function($httpProvider) {
   $httpProvider.interceptors.push(['$q', 'promiseTracker', function($q, promiseTracker) {
+
+    var cachedConfigs = {};
+
     return {
       request: function(config) {
         if (config.tracker) {
@@ -22,22 +25,38 @@ angular.module('ajoslin.promise-tracker')
             config.$promiseTrackerDeferred.push(deferred);
           });
         }
+
+        // cache request config
+        if (config.cache) {
+          if (! cachedConfigs[config.url]) {
+            cachedConfigs[config.url] = [];
+          }
+          cachedConfigs[config.url].push(config);
+        }
         return $q.when(config);
       },
       response: function(response) {
-        if (response.config && response.config.$promiseTrackerDeferred) {
-          angular.forEach(response.config.$promiseTrackerDeferred, function(deferred) {
+        var config = cachedConfigs[response.config.url]? cachedConfigs[response.config.url].shift() : response.config;
+
+        if (config && config.$promiseTrackerDeferred) {
+          angular.forEach(config.$promiseTrackerDeferred, function(deferred) {
             deferred.resolve(response);
           });
         }
+
+        if (cachedConfigs[config.url] && cachedConfigs[config.url].length == 0) delete cachedConfigs[config.url];
         return $q.when(response);
       },
       responseError: function(response) {
-        if (response.config && response.config.$promiseTrackerDeferred) {
-          angular.forEach(response.config.$promiseTrackerDeferred, function(deferred) {
+        var config = cachedConfigs[response.config.url] ? cachedConfigs[response.config.url].shift() : response.config;
+
+        if (config && config.$promiseTrackerDeferred) {
+          angular.forEach(config.$promiseTrackerDeferred, function(deferred) {
             deferred.reject(response);
           });
         }
+
+        if (cachedConfigs[config.url] && cachedConfigs[config.url].length == 0) delete cachedConfigs[config.url];
         return $q.reject(response);
       }
     };
